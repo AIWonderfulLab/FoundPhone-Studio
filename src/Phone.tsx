@@ -447,7 +447,7 @@ function PhoneRuntime({
                     work.apps.find((a) => a.id === app)?.name ?? plugin.name
                   }
                   items={[
-                    ...(work.data[app] ?? []),
+                    ...(app === "b612" ? (work.data.photos ?? []).filter((item) => item.kind === "image") : work.data[app] ?? []),
                     ...(s.messages[app] ?? []),
                   ]}
                   creator={creator}
@@ -775,6 +775,21 @@ function PhoneRuntime({
           )}
           <button
             className="home-indicator"
+            onTouchStart={(e) => {
+              gesture.current.y = e.touches[0]?.clientY ?? 0;
+            }}
+            onTouchEnd={(e) => {
+              const origin = gesture.current.y;
+              const ending = e.changedTouches[0]?.clientY ?? origin;
+              if (origin - ending < 35 || locked) return;
+              gestureConsumed.current = true;
+              captureApp();
+              setHomeRequest((n) => n + 1);
+              setKeyboard(false);
+              setApp("");
+              setFolder("");
+              setPanel("");
+            }}
             aria-label="返回桌面"
             onClick={() => {
               if (gestureConsumed.current) return;

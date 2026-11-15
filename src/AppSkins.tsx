@@ -1,6 +1,6 @@
 import { NativeComposer } from "./DeviceSystem";
 import { useSkinState } from "./skinState";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   ChevronLeft,
   Plus,
@@ -117,8 +117,22 @@ function MessageList({
   onRead: (id: string) => void;
   whatsapp?: boolean;
 }) {
+  const messagesRef = useRef<HTMLDivElement>(null);
+  const lastMessageId = items[items.length - 1]?.id;
+  useLayoutEffect(() => {
+    const messages = messagesRef.current;
+    if (!messages) return;
+    // Start on the newest message without scrolling the whole page.
+    const scrollToBottom = () => {
+      messages.scrollTop = messages.scrollHeight;
+    };
+    scrollToBottom();
+    const frame = window.requestAnimationFrame(scrollToBottom);
+    return () => window.cancelAnimationFrame(frame);
+  }, [lastMessageId]);
+
   return (
-    <div className={`skin-messages ${whatsapp ? "wa-wallpaper" : ""}`}>
+    <div ref={messagesRef} className={`skin-messages ${whatsapp ? "wa-wallpaper" : ""}`}>
       {items.map((i, index) => {
         const previous = items[index - 1];
         const showTimestamp = showMessageTimestamp(i.time, previous?.time);
@@ -367,6 +381,7 @@ export function WeChatSkin(p: SkinProps) {
             </button>
           )}
           <MessageList
+            key={p.thread}
             items={p.items.filter((i) => i.title === p.thread)}
             creator={p.creator}
             onItem={p.onItem}

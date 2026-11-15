@@ -27,7 +27,7 @@ test("published default matches full test preview, four dock apps and updated st
     .locator(".phone-screen")
     .screenshot({ path: "docs/images/lock.png" });
   await page.getByRole("button", { name: "轻触解锁" }).click();
-  await page.getByRole("textbox", { name: "锁屏密码" }).fill("1031");
+  await page.getByLabel("锁屏密码").fill("1031");
   await expect(page.locator(".lock-screen")).toHaveCount(0);
   await expect(page.locator(".interactive-home")).toHaveCSS("opacity", "1");
   await expect(page.locator(".dock [data-home-key]")).toHaveCount(4);

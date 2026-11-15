@@ -1,9 +1,9 @@
 {
   "scriptVersion": 1,
   "id": "ui-test-phone-v2",
-  "title": "捡手机",
+  "title": "瑶台月下",
   "description": "仅用于界面测试，不含剧情",
-  "revision": 11,
+  "revision": 12,
   "phone": {
     "owner": "小七🐱🌸",
     "passcode": "1031",

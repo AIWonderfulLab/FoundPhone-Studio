@@ -110,7 +110,7 @@ function Studio() {
     return (
       <div className="boot">
         <Smartphone size={40} />
-        <h1>捡手机</h1>
+        <h1>瑶台月下</h1>
         <p>{store.error || "正在打开你的故事工作室…"}</p>
       </div>
     );
@@ -146,7 +146,7 @@ function Studio() {
             <Smartphone size={25} />
           </span>
           <span>
-            捡手机<small>FOUNDPHONE STUDIO</small>
+            瑶台月下<small>FOUNDPHONE STUDIO</small>
           </span>
         </a>
         <div className="workspace-label">
@@ -195,7 +195,7 @@ function Studio() {
           </button>
           <button onClick={() => setModal("about")}>
             <Info size={17} />
-            关于捡手机
+            关于瑶台月下
           </button>
           <div className="local-status">
             <span />
@@ -714,7 +714,7 @@ function Studio() {
       )}
       {(modal === "guide" || modal === "about") && (
         <Modal
-          title={modal === "guide" ? "创作指南" : "捡手机 FoundPhone Studio"}
+          title={modal === "guide" ? "创作指南" : "瑶台月下 FoundPhone Studio"}
           onClose={() => setModal("")}
         >
           <div className="guide-content">

@@ -62,7 +62,7 @@ function Avatar({
       {safeMedia(src)?.startsWith("data:image/") ? (
         <img src={safeMedia(src)} alt="" />
       ) : (
-        name.slice(0, 1)
+        name === "丁🥣" ? "🥣" : name.slice(0, 1)
       )}
     </span>
   );

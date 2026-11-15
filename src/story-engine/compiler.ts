@@ -177,6 +177,13 @@ export function compileStory(raw: unknown): { story: Story; work: Work } {
         `contacts.${n}`,
       );
   });
+  // Use the same owner's profile photo across all conversations even when an
+  // individual outgoing message has no explicit avatar.
+  const ownerAvatar =
+    s.chats
+      .flatMap((chat) => chat.messages)
+      .find((message) => message.senderId === "owner" && message.avatar)
+      ?.avatar || "";
   s.chats.forEach((chat, n) => {
     unique(chat.id, `chats.${n}.id`);
     if (!registry.some((a) => a.id === chat.app && a.engine === "messaging"))
@@ -202,7 +209,11 @@ export function compileStory(raw: unknown): { story: Story; work: Work } {
             senderId === "owner"
               ? s.phone.owner
               : contacts.get(senderId || "")?.name || m.sender || s.phone.owner,
-          avatar: m.avatar || contacts.get(senderId || "")?.avatar || "",
+          avatar:
+            m.avatar ||
+            (senderId === "owner"
+              ? ownerAvatar
+              : contacts.get(senderId || "")?.avatar || ""),
           outgoing: senderId === "owner" || m.outgoing,
           meta: {
             ...m.meta,

@@ -63,37 +63,65 @@
     "calculator",
     "settings",
     {
+      "name": "QQ",
+      "dock": false,
+      "folder": "",
+      "icon": "",
       "id": "qq",
       "installed": true,
       "visible": false
     },
     {
+      "name": "微博",
+      "dock": false,
+      "folder": "",
+      "icon": "",
       "id": "weibo",
       "installed": true,
       "visible": false
     },
     {
+      "name": "小红书",
+      "dock": false,
+      "folder": "",
+      "icon": "",
       "id": "redbook",
       "installed": true,
       "visible": false
     },
     {
+      "name": "哔哩哔哩",
+      "dock": false,
+      "folder": "",
+      "icon": "",
       "id": "bilibili",
       "installed": true,
       "visible": false
     },
     {
+      "name": "支付宝",
+      "dock": false,
+      "folder": "",
+      "icon": "",
       "id": "alipay",
       "installed": true,
       "visible": false
     },
     {
+      "name": "淘宝",
+      "dock": false,
+      "folder": "",
+      "icon": "",
       "id": "taobao",
       "installed": true,
       "visible": false
     },
     "netease",
     {
+      "name": "外卖",
+      "dock": false,
+      "folder": "",
+      "icon": "",
       "id": "delivery",
       "installed": true,
       "visible": false

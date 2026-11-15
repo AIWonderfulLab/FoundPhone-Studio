@@ -163,15 +163,20 @@ export function WeChatSkin(p: SkinProps) {
     "readThreads",
     [],
   );
+  const pinnedThreads = new Set(
+    p.items.filter((i) => i.meta.pinned === "true").map((i) => i.title),
+  );
   const conversations = [
     ...new Set(
       p.items
         .filter((i) => !["朋友圈", "我"].includes(i.folder))
         .map((i) => i.title),
     ),
-  ];
+  ].sort((a, b) => Number(pinnedThreads.has(b)) - Number(pinnedThreads.has(a)));
   const contacts = [
-    ...new Set(p.items.map((i) => i.sender).filter((s) => s !== "我")),
+    ...new Set(
+      p.items.map((i) => i.sender).filter((s) => s !== "我" && s !== p.owner),
+    ),
   ];
   const posts = p.items.filter(
     (i) => i.folder === "朋友圈" || i.kind === "post",
@@ -341,7 +346,7 @@ export function WeChatSkin(p: SkinProps) {
                     last = list.at(-1)!;
                   return (
                     <button
-                      className="wx-chat-row"
+                      className={`wx-chat-row ${pinnedThreads.has(t) ? "pinned" : ""}`}
                       key={t}
                       onClick={() => {
                         setReadThreads((v) => (v.includes(t) ? v : [...v, t]));
@@ -350,7 +355,10 @@ export function WeChatSkin(p: SkinProps) {
                       }}
                     >
                       <span className="wx-chat-avatar">
-                        <Avatar name={t} src={last.avatar} />
+                        <Avatar
+                          name={t}
+                          src={list.find((i) => !i.outgoing)?.avatar || last.avatar}
+                        />
                         {!readThreads.includes(t) &&
                           list.some((i) => !i.read) && (
                             <b className="wx-unread">
@@ -419,7 +427,10 @@ export function WeChatSkin(p: SkinProps) {
           ) : (
             <>
               <div className="wx-profile">
-                <Avatar name={p.owner || "机主"} />
+                <Avatar
+                  name={p.owner || "机主"}
+                  src={p.items.find((i) => i.outgoing && i.avatar)?.avatar}
+                />
                 <div>
                   <h2>{p.owner || "机主"}</h2>
                   <small>微信号：未设置</small>

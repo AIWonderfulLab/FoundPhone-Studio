@@ -1,6 +1,6 @@
 import { NativeComposer } from "./DeviceSystem";
 import { useSkinState } from "./skinState";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import {
   ChevronLeft,
   Plus,
@@ -83,6 +83,27 @@ function ItemMedia({ item }: { item: Item }) {
     </div>
   );
 }
+function messageTimeLabel(time: string, showDate: boolean) {
+  const [date = "", clock = ""] = time.split(" ");
+  const [year, month, day] = date.split("-");
+  const stamp = clock.slice(0, 5);
+  return showDate && year && month && day
+    ? `${Number(month)}月${Number(day)}日 ${stamp}`
+    : stamp || date;
+}
+
+function showMessageTimestamp(time: string, previous?: string) {
+  if (!previous) return true;
+  const [date, clock = ""] = time.split(" ");
+  const [previousDate, previousClock = ""] = previous.split(" ");
+  if (date !== previousDate) return true;
+  const minutes = (value: string) => {
+    const [h, m] = value.split(":").map(Number);
+    return h * 60 + m;
+  };
+  return minutes(clock) - minutes(previousClock) >= 10;
+}
+
 function MessageList({
   items,
   creator,
@@ -98,37 +119,48 @@ function MessageList({
 }) {
   return (
     <div className={`skin-messages ${whatsapp ? "wa-wallpaper" : ""}`}>
-      <div className="skin-date">{items[0]?.time.slice(0, 10)}</div>
-      {items.map((i) => (
-        <div
-          key={i.id}
-          className={`skin-message ${i.outgoing ? "outgoing" : ""}`}
-        >
-          {!whatsapp && !i.outgoing && (
-            <Avatar name={i.sender} src={i.avatar} />
-          )}
-          <button
-            className="skin-bubble"
-            onClick={() => (creator ? onItem(i) : onRead(i.id))}
-          >
-            {["image", "audio", "video"].includes(i.kind) ? (
-              <ItemMedia item={i} />
-            ) : i.kind === "transfer" ? (
-              <div className="skin-transfer">
-                ¥ {i.body}
-                <small>转账记录 · 虚构</small>
+      {items.map((i, index) => {
+        const previous = items[index - 1];
+        const showTimestamp = showMessageTimestamp(i.time, previous?.time);
+        const changedDate =
+          !previous || i.time.slice(0, 10) !== previous.time.slice(0, 10);
+        return (
+          <Fragment key={i.id}>
+            {showTimestamp && (
+              <div className="skin-date">
+                {messageTimeLabel(i.time, changedDate)}
               </div>
-            ) : (
-              i.body
             )}
-            <small className={whatsapp ? undefined : "wx-message-time"}>
-              {i.time.slice(-5)}{" "}
-              {whatsapp && i.outgoing && <CheckCheck size={11} />}
-            </small>
-          </button>
-          {!whatsapp && i.outgoing && <Avatar name={i.sender} src={i.avatar} />}
-        </div>
-      ))}
+            <div className={`skin-message ${i.outgoing ? "outgoing" : ""}`}>
+              {!whatsapp && !i.outgoing && (
+                <Avatar name={i.sender} src={i.avatar} />
+              )}
+              <button
+                className="skin-bubble"
+                onClick={() => (creator ? onItem(i) : onRead(i.id))}
+              >
+                {["image", "audio", "video"].includes(i.kind) ? (
+                  <ItemMedia item={i} />
+                ) : i.kind === "transfer" ? (
+                  <div className="skin-transfer">
+                    ¥ {i.body}
+                    <small>转账记录 · 虚构</small>
+                  </div>
+                ) : (
+                  i.body
+                )}
+                <small className={whatsapp ? undefined : "wx-message-time"}>
+                  {i.time.slice(-5)}{" "}
+                  {whatsapp && i.outgoing && <CheckCheck size={11} />}
+                </small>
+              </button>
+              {!whatsapp && i.outgoing && (
+                <Avatar name={i.sender} src={i.avatar} />
+              )}
+            </div>
+          </Fragment>
+        );
+      })}
     </div>
   );
 }

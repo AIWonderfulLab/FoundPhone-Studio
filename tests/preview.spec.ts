@@ -22,7 +22,7 @@ test("development preview contains generic placeholders", async ({
   await page
     .getByRole("button", { name: "打开App Store", exact: true })
     .click();
-  await expect(page.locator(".runtime-library-row")).toHaveCount(49);
+  await expect(page.locator(".runtime-library-row")).toHaveCount(50);
   await page.getByRole("button", { name: "关闭App管理" }).click();
   await page.getByRole("button", { name: "控制中心", exact: true }).click();
   await expect(page.locator(".device-control")).toHaveCSS("opacity", "1");

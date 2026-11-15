@@ -1,6 +1,6 @@
 import { NativeComposer } from "./DeviceSystem";
 import { useSkinState } from "./skinState";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ChevronLeft,
   Plus,
@@ -158,6 +158,51 @@ export function WeChatSkin(p: SkinProps) {
     [menu, setMenu] = useState(false),
     [searchOpen, setSearchOpen] = useState(false),
     [utility, setUtility] = useState("");
+  const [voiceCall, setVoiceCall] = useState(false);
+  const ringRef = useRef<{ context: AudioContext; timer: number } | null>(null);
+  const stopVoiceCall = () => {
+    const ring = ringRef.current;
+    ringRef.current = null;
+    if (ring) {
+      window.clearInterval(ring.timer);
+      void ring.context.close();
+    }
+    setVoiceCall(false);
+  };
+  const startVoiceCall = () => {
+    if (voiceCall) return;
+    setVoiceCall(true);
+    try {
+      // Original, generic call-progress beep; no commercial song is embedded.
+      const context = new AudioContext();
+      const beep = () => {
+        if (context.state === "closed") return;
+        const oscillator = context.createOscillator();
+        const volume = context.createGain();
+        oscillator.type = "sine";
+        oscillator.frequency.value = 440;
+        volume.gain.setValueAtTime(0.0001, context.currentTime);
+        volume.gain.exponentialRampToValueAtTime(0.035, context.currentTime + 0.04);
+        volume.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.32);
+        oscillator.connect(volume);
+        volume.connect(context.destination);
+        oscillator.start();
+        oscillator.stop(context.currentTime + 0.34);
+      };
+      beep();
+      ringRef.current = { context, timer: window.setInterval(beep, 1900) };
+    } catch {
+      // The simulated call still works when the browser disallows audio.
+    }
+  };
+  useEffect(() => () => {
+    const ring = ringRef.current;
+    if (ring) {
+      window.clearInterval(ring.timer);
+      void ring.context.close();
+      ringRef.current = null;
+    }
+  }, []);
   const [readThreads, setReadThreads] = useSkinState<string[]>(
     p,
     "readThreads",
@@ -282,6 +327,11 @@ export function WeChatSkin(p: SkinProps) {
         </div>
       ) : p.thread ? (
         <>
+          {p.thread === "👶🌙" && (
+            <button type="button" className="wx-voice-call-button" onClick={startVoiceCall}>
+              <Phone size={17} /> 语音通话
+            </button>
+          )}
           <MessageList
             items={p.items.filter((i) => i.title === p.thread)}
             creator={p.creator}
@@ -289,6 +339,18 @@ export function WeChatSkin(p: SkinProps) {
             onRead={p.onRead}
           />
           <Compose creator={p.creator} onAdd={p.onAdd} />
+          {voiceCall && p.thread === "👶🌙" && (
+            <div className="wx-voice-call-screen" role="dialog" aria-label="微信语音通话">
+              <div className="wx-voice-call-avatar">👶🌙</div>
+              <h2>👶🌙</h2>
+              <p>微信语音通话 · 呼叫中…</p>
+              <small>对方铃声：《爱乐之城》</small>
+              <small>目前播放原创呼叫提示音，尚未添加原曲音频</small>
+              <button type="button" className="wx-voice-hangup" onClick={stopVoiceCall}>
+                <Phone size={24} /> 挂断
+              </button>
+            </div>
+          )}
         </>
       ) : moments ? (
         <div className="wx-moments">

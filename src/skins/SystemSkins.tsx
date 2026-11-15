@@ -25,7 +25,7 @@ import {
   Users,
   Wallet,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { download } from "../io";
 import { safeMedia, type Item } from "../schema";
 import {
@@ -185,6 +185,15 @@ export function ContactsSkin(p: Props) {
 export function PhotosSkin(p: Props) {
   const { tab, setTab, q, setQ, items } = useContent(p, "图库");
   const [album, setAlbum] = useState("");
+  const photoScroll = useRef<HTMLDivElement>(null);
+  const hasPositioned = useRef(false);
+  useLayoutEffect(() => {
+    if (tab !== "图库" || album || hasPositioned.current) return;
+    const el = photoScroll.current;
+    if (!el) return;
+    el.scrollTop = el.scrollHeight;
+    hasPositioned.current = true;
+  }, [tab, album, items.length]);
   const list =
     tab === "收藏"
       ? items.filter((i) => i.favorite)
@@ -194,7 +203,7 @@ export function PhotosSkin(p: Props) {
   return (
     <div className="catalog-skin native-photos">
       <Header p={p} />
-      <div className="catalog-scroll">
+      <div className="catalog-scroll" ref={photoScroll}>
         <h1>{album || tab}</h1>
         {tab === "相簿" && !album ? (
           <div className="album-grid">

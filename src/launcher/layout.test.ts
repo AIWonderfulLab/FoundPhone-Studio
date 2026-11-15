@@ -138,5 +138,31 @@ it("removes deprecated story apps from saved layouts without removing other apps
     expect(app.visible).toBe(false);
   }
   expect(migrated.apps.find((x) => x.id === "photos")?.installed).toBe(true);
-  expect(migrated.previewLayoutRevision).toBe(2);
+  expect(migrated.previewLayoutRevision).toBe(3);
+});
+
+it("removes six apps and hides eight apps in an existing phone layout", async () => {
+  const preview = await import("../../stories/test-preview/story.json");
+  const w = compileStory(preview.default).work;
+  const old = defaultLayout(w);
+  old.previewLayoutRevision = 2;
+  const removed = ["instagram", "discord", "messenger", "reddit", "pinterest", "forum"];
+  const hidden = ["redbook", "taobao", "bilibili", "alipay", "weibo", "delivery", "douyin", "qq"];
+  for (const id of [...removed, ...hidden]) {
+    const app = old.apps.find((a) => a.id === id)!;
+    app.installed = true;
+    app.visible = true;
+  }
+  const migrated = validateLayout(old, w);
+  for (const id of removed) {
+    const app = migrated.apps.find((a) => a.id === id)!;
+    expect(app.installed).toBe(false);
+    expect(app.visible).toBe(false);
+  }
+  for (const id of hidden) {
+    const app = migrated.apps.find((a) => a.id === id)!;
+    expect(app.installed).toBe(true);
+    expect(app.visible).toBe(false);
+  }
+  expect(migrated.previewLayoutRevision).toBe(3);
 });

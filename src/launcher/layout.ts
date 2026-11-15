@@ -135,6 +135,27 @@ export function validateLayout(raw: unknown, input: Work) {
     layout.order = layout.order.filter((id) => !removedApps.has(id));
     layout.previewLayoutRevision = 2;
   }
+  // Apply the current story's removals and temporarily hidden app choices to
+  // existing Safari home layouts, without losing other customizations.
+  if (w.id === "ui-test-phone-v2" && layout.previewLayoutRevision < 3) {
+    const deleted = new Set([
+      "instagram", "discord", "messenger", "reddit", "pinterest", "forum",
+    ]);
+    const hidden = new Set([
+      "redbook", "taobao", "bilibili", "alipay", "weibo", "delivery",
+      "douyin", "qq",
+    ]);
+    for (const app of layout.apps) {
+      if (!deleted.has(app.id) && !hidden.has(app.id)) continue;
+      if (deleted.has(app.id)) app.installed = false;
+      app.visible = false;
+      app.dock = false;
+      app.folder = "";
+      delete layout.positions[app.id];
+    }
+    layout.order = layout.order.filter((id) => !deleted.has(id) && !hidden.has(id));
+    layout.previewLayoutRevision = 3;
+  }
   const entries = homeEntries(layout),
     packed = packHome(entries, layout.positions);
   for (const entry of entries) {

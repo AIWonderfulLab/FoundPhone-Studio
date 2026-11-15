@@ -5018,16 +5018,7 @@ label {
 }
 
 
-/* Show exact story timestamps in WeChat, including the iOS18 skin. */
-.ios18 .wechat-ui .wx-message-time,
-.wechat-ui .wx-message-time {
-  display: flex;
-  justify-content: flex-end;
-  font-size: 10px;
-  line-height: 1.3;
-  margin-top: 5px;
-  opacity: 0.82;
-}
+/* Show time dividers between WeChat messages, never inside the bubbles. */
 .ios18 .wechat-ui .skin-date {
   font-size: 12px;
   margin: 14px 0 18px;

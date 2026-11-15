@@ -3,7 +3,7 @@
   "id": "ui-test-phone-v2",
   "title": "捡手机",
   "description": "仅用于界面测试，不含剧情",
-  "revision": 6,
+  "revision": 7,
   "phone": {
     "owner": "小七🐱🌸",
     "passcode": "1031",
@@ -484,12 +484,172 @@
     ],
     "netease": [
       {
-        "id": "test-item-netease",
-        "title": "测试内容",
-        "body": "这是一条测试内容。",
-        "sender": "测试用户",
+        "id": "netease-song-01",
+        "title": "慢慢喜欢你",
+        "body": "已添加到收藏歌单。此剧情演示不包含原曲音频。",
+        "sender": "",
         "kind": "text",
-        "meta": {}
+        "folder": "我喜欢的音乐",
+        "favorite": true,
+        "meta": {
+          "album": "我喜欢的音乐"
+        }
+      },
+      {
+        "id": "netease-song-02",
+        "title": "爱你",
+        "body": "已添加到收藏歌单。此剧情演示不包含原曲音频。",
+        "sender": "",
+        "kind": "text",
+        "folder": "我喜欢的音乐",
+        "favorite": true,
+        "meta": {
+          "album": "我喜欢的音乐"
+        }
+      },
+      {
+        "id": "netease-song-03",
+        "title": "这条小鱼在乎",
+        "body": "已添加到收藏歌单。此剧情演示不包含原曲音频。",
+        "sender": "",
+        "kind": "text",
+        "folder": "我喜欢的音乐",
+        "favorite": true,
+        "meta": {
+          "album": "我喜欢的音乐"
+        }
+      },
+      {
+        "id": "netease-song-04",
+        "title": "说爱你",
+        "body": "已添加到收藏歌单。此剧情演示不包含原曲音频。",
+        "sender": "",
+        "kind": "text",
+        "folder": "我喜欢的音乐",
+        "favorite": true,
+        "meta": {
+          "album": "我喜欢的音乐"
+        }
+      },
+      {
+        "id": "netease-song-05",
+        "title": "词不达意",
+        "body": "已添加到收藏歌单。此剧情演示不包含原曲音频。",
+        "sender": "",
+        "kind": "text",
+        "folder": "我喜欢的音乐",
+        "favorite": true,
+        "meta": {
+          "album": "我喜欢的音乐"
+        }
+      },
+      {
+        "id": "netease-song-06",
+        "title": "仰望",
+        "body": "已添加到收藏歌单。此剧情演示不包含原曲音频。",
+        "sender": "",
+        "kind": "text",
+        "folder": "我喜欢的音乐",
+        "favorite": true,
+        "meta": {
+          "album": "我喜欢的音乐"
+        }
+      },
+      {
+        "id": "netease-song-07",
+        "title": "你啊你啊",
+        "body": "已添加到收藏歌单。此剧情演示不包含原曲音频。",
+        "sender": "",
+        "kind": "text",
+        "folder": "我喜欢的音乐",
+        "favorite": true,
+        "meta": {
+          "album": "我喜欢的音乐"
+        }
+      },
+      {
+        "id": "netease-song-08",
+        "title": "大眠",
+        "body": "已添加到收藏歌单。此剧情演示不包含原曲音频。",
+        "sender": "",
+        "kind": "text",
+        "folder": "我喜欢的音乐",
+        "favorite": true,
+        "meta": {
+          "album": "我喜欢的音乐"
+        }
+      },
+      {
+        "id": "netease-song-09",
+        "title": "那些花儿",
+        "body": "已添加到收藏歌单。此剧情演示不包含原曲音频。",
+        "sender": "",
+        "kind": "text",
+        "folder": "我喜欢的音乐",
+        "favorite": true,
+        "meta": {
+          "album": "我喜欢的音乐"
+        }
+      },
+      {
+        "id": "netease-song-10",
+        "title": "触电",
+        "body": "已添加到收藏歌单。此剧情演示不包含原曲音频。",
+        "sender": "",
+        "kind": "text",
+        "folder": "我喜欢的音乐",
+        "favorite": true,
+        "meta": {
+          "album": "我喜欢的音乐"
+        }
+      },
+      {
+        "id": "netease-song-11",
+        "title": "胆小鬼",
+        "body": "已添加到收藏歌单。此剧情演示不包含原曲音频。",
+        "sender": "",
+        "kind": "text",
+        "folder": "我喜欢的音乐",
+        "favorite": true,
+        "meta": {
+          "album": "我喜欢的音乐"
+        }
+      },
+      {
+        "id": "netease-song-12",
+        "title": "恶作剧",
+        "body": "已添加到收藏歌单。此剧情演示不包含原曲音频。",
+        "sender": "",
+        "kind": "text",
+        "folder": "我喜欢的音乐",
+        "favorite": true,
+        "meta": {
+          "album": "我喜欢的音乐"
+        }
+      },
+      {
+        "id": "netease-song-13",
+        "title": "恋人未满",
+        "body": "已添加到收藏歌单。此剧情演示不包含原曲音频。",
+        "sender": "",
+        "kind": "text",
+        "folder": "我喜欢的音乐",
+        "favorite": true,
+        "meta": {
+          "album": "我喜欢的音乐"
+        }
+      },
+      {
+        "id": "netease-song-14",
+        "title": "奇妙能力歌",
+        "body": "已添加到收藏歌单。此剧情演示不包含原曲音频。",
+        "sender": "",
+        "kind": "text",
+        "folder": "我喜欢的音乐",
+        "favorite": true,
+        "meta": {
+          "album": "我喜欢的音乐"
+        }
       }
     ],
     "delivery": [

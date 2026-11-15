@@ -4918,3 +4918,20 @@ label {
   background: #e34f58;
   transform: rotate(135deg);
 }
+
+
+/* Story-specific user wallpapers: home desktop and lock screen use different photos. */
+.ios18 .phone-screen.wallpaper-custom-dual {
+  background-color: #21252c;
+  background-image: url("./assets/wallpapers/desktop.webp");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.ios18 .phone-screen.wallpaper-custom-dual.is-locked {
+  background-image: url("./assets/wallpapers/lock.webp");
+  background-position: center center;
+}
+.ios18 .phone-screen.wallpaper-custom-dual .wallpaper-orb {
+  display: none;
+}

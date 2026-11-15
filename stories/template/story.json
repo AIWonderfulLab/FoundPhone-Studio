@@ -3,10 +3,10 @@
   "id": "ui-test-phone-v2",
   "title": "瑶台月下",
   "description": "仅用于界面测试，不含剧情",
-  "revision": 12,
+  "revision": 13,
   "phone": {
     "owner": "小七🐱🌸",
-    "passcode": "1031",
+    "passcode": "0914",
     "date": "2026-10-25",
     "time": "09:41",
     "battery": 94,
@@ -1062,6 +1062,18 @@
       {
         "id": "netease-song-14",
         "title": "奇妙能力歌",
+        "body": "已添加到收藏歌单。此剧情演示不包含原曲音频。",
+        "sender": "",
+        "kind": "text",
+        "folder": "我喜欢的音乐",
+        "favorite": true,
+        "meta": {
+          "album": "我喜欢的音乐"
+        }
+      },
+      {
+        "id": "netease-song-15",
+        "title": "淡季",
         "body": "已添加到收藏歌单。此剧情演示不包含原曲音频。",
         "sender": "",
         "kind": "text",

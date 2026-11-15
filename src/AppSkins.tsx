@@ -149,10 +149,12 @@ function MessageList({
                 ) : (
                   i.body
                 )}
-                <small className={whatsapp ? undefined : "wx-message-time"}>
-                  {i.time.slice(-5)}{" "}
-                  {whatsapp && i.outgoing && <CheckCheck size={11} />}
-                </small>
+                {whatsapp && (
+                  <small>
+                    {i.time.slice(-5)}{" "}
+                    {i.outgoing && <CheckCheck size={11} />}
+                  </small>
+                )}
               </button>
               {!whatsapp && i.outgoing && (
                 <Avatar name={i.sender} src={i.avatar} />

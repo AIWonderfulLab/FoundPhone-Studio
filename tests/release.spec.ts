@@ -6,11 +6,12 @@ test("published default matches full test preview, four dock apps and updated st
   const work = await (await request.get("/work.json")).json();
   const preview = await (await request.get("/test-work.json")).json();
   expect(work.id).toBe("ui-test-phone-v2");
-  expect(work.apps).toEqual(preview.apps);
-  expect(work.data).toEqual(preview.data);
+  // The published story is customized; the full neutral preview remains a separate fixture.
+  expect(preview.apps.length).toBeGreaterThanOrEqual(49);
+  expect(work.apps.some((a: { id: string; installed: boolean }) => a.id === "b612" && a.installed)).toBe(true);
   expect(
     work.apps.filter((a: { installed: boolean }) => a.installed),
-  ).toHaveLength(49);
+  ).toHaveLength(38);
   expect(work.nodes).toHaveLength(0);
   expect(
     work.apps.filter(
@@ -26,6 +27,7 @@ test("published default matches full test preview, four dock apps and updated st
     .locator(".phone-screen")
     .screenshot({ path: "docs/images/lock.png" });
   await page.getByRole("button", { name: "轻触解锁" }).click();
+  await page.getByRole("textbox", { name: "锁屏密码" }).fill("1031");
   await expect(page.locator(".lock-screen")).toHaveCount(0);
   await expect(page.locator(".interactive-home")).toHaveCSS("opacity", "1");
   await expect(page.locator(".dock [data-home-key]")).toHaveCount(4);

@@ -117,3 +117,26 @@ it("migrates preview folders once while preserving custom folders and widgets", 
     validateLayout(migrated, w).apps.find((a) => a.id === "wechat")!.folder,
   ).toBe("作者新建文件夹");
 });
+
+it("removes deprecated story apps from saved layouts without removing other apps", async () => {
+  const preview = await import("../../stories/test-preview/story.json");
+  const w = compileStory(preview.default).work;
+  const old = defaultLayout(w);
+  old.previewLayoutRevision = 1;
+  for (const id of ["whatsapp", "tiktok", "youtube", "kakao"]) {
+    const app = old.apps.find((x) => x.id === id)!;
+    app.installed = true;
+    app.visible = true;
+  }
+  const photos = old.apps.find((x) => x.id === "photos")!;
+  photos.installed = true;
+  photos.visible = true;
+  const migrated = validateLayout(old, w);
+  for (const id of ["whatsapp", "tiktok", "youtube", "kakao"]) {
+    const app = migrated.apps.find((x) => x.id === id)!;
+    expect(app.installed).toBe(false);
+    expect(app.visible).toBe(false);
+  }
+  expect(migrated.apps.find((x) => x.id === "photos")?.installed).toBe(true);
+  expect(migrated.previewLayoutRevision).toBe(2);
+});

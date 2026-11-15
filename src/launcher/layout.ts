@@ -118,6 +118,23 @@ export function validateLayout(raw: unknown, input: Work) {
     ];
     layout.previewLayoutRevision = 1;
   }
+  // Apply story-owned app removals to older layouts saved in localStorage.
+  if (w.id === "ui-test-phone-v2" && layout.previewLayoutRevision < 2) {
+    const removedApps = new Set([
+      "whatsapp", "tiktok", "twitter", "telegram", "snapchat", "facebook",
+      "spotify", "netflix", "threads", "kakao", "youtube", "line",
+    ]);
+    for (const app of layout.apps) {
+      if (!removedApps.has(app.id)) continue;
+      app.installed = false;
+      app.visible = false;
+      app.dock = false;
+      app.folder = "";
+      delete layout.positions[app.id];
+    }
+    layout.order = layout.order.filter((id) => !removedApps.has(id));
+    layout.previewLayoutRevision = 2;
+  }
   const entries = homeEntries(layout),
     packed = packHome(entries, layout.positions);
   for (const entry of entries) {

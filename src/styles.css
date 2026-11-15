@@ -4935,3 +4935,78 @@ label {
 .ios18 .phone-screen.wallpaper-custom-dual .wallpaper-orb {
   display: none;
 }
+
+
+/* Pinned WeChat contact list alignment and simulated outgoing voice call. */
+.ios18 .wechat-ui .wx-contact,
+.wechat-ui .wx-contact {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  text-align: left;
+  margin: 0;
+  padding-left: 18px;
+  gap: 12px;
+}
+.ios18 .wechat-ui .wx-contact .skin-avatar,
+.wechat-ui .wx-contact .skin-avatar {
+  flex: 0 0 auto;
+  margin: 0;
+}
+.wechat-ui .wx-voice-call-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding: 10px;
+  background: #fff;
+  color: #07a657;
+  font-size: 13px;
+  border-bottom: 1px solid #ececec;
+}
+.wechat-ui .wx-voice-call-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(165deg, #364b4c, #172326 80%);
+  color: white;
+  text-align: center;
+  padding: 108px 20px 55px;
+}
+.wx-voice-call-avatar {
+  width: 88px;
+  height: 88px;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+  font-size: 30px;
+  background: #76878a;
+}
+.wx-voice-call-screen h2 {
+  margin: 20px 0 10px;
+  font-size: 24px;
+}
+.wx-voice-call-screen p {
+  color: #e1eeee;
+  margin: 8px 0 24px;
+}
+.wx-voice-call-screen small {
+  display: block;
+  font-size: 11px;
+  color: #b3c9ca;
+  margin: 6px 0;
+}
+.wx-voice-hangup {
+  margin-top: auto;
+  border-radius: 28px;
+  padding: 15px 28px;
+  color: #fff;
+  background: #de4650;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}

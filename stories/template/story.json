@@ -168,7 +168,9 @@
           "senderId": "baby-moon",
           "time": "2026-11-09 09:03",
           "meta": {
-            "pinned": "true"
+            "pinned": "true",
+            "voiceRingtone": "wechat-baby-moon-city-of-stars.mp3",
+            "voiceRingtoneTitle": "City of Stars"
           }
         },
         {
@@ -1020,27 +1022,27 @@
       {
         "id": "netease-song-01",
         "title": "慢慢喜欢你",
-        "body": "已添加到收藏歌单。此剧情演示不包含原曲音频。",
+        "body": "已添加到收藏歌单。",
         "sender": "莫文蔚",
         "kind": "text",
         "folder": "我喜欢的音乐",
         "favorite": true,
         "meta": {
           "album": "我喜欢的音乐",
-          "appleMusic": "cn:1869049124:1869049128"
+          "localAudio": "netease-song-01.mp3"
         }
       },
       {
         "id": "netease-song-02",
         "title": "爱你",
-        "body": "已添加到收藏歌单。此剧情演示不包含原曲音频。",
+        "body": "已添加到收藏歌单。",
         "sender": "王心凌",
         "kind": "text",
         "folder": "我喜欢的音乐",
         "favorite": true,
         "meta": {
           "album": "我喜欢的音乐",
-          "appleMusic": "cn:1708557388:1708557590"
+          "localAudio": "netease-song-02.mp3"
         }
       },
       {
@@ -1052,8 +1054,7 @@
         "folder": "我喜欢的音乐",
         "favorite": true,
         "meta": {
-          "album": "我喜欢的音乐",
-          "appleMusic": "cn:1743355809:1743355810"
+          "album": "我喜欢的音乐"
         }
       },
       {
@@ -1065,8 +1066,7 @@
         "folder": "我喜欢的音乐",
         "favorite": true,
         "meta": {
-          "album": "我喜欢的音乐",
-          "appleMusic": "cn:556949302:556950078"
+          "album": "我喜欢的音乐"
         }
       },
       {
@@ -1078,8 +1078,7 @@
         "folder": "我喜欢的音乐",
         "favorite": true,
         "meta": {
-          "album": "我喜欢的音乐",
-          "appleMusic": "cn:905221552:905221558"
+          "album": "我喜欢的音乐"
         }
       },
       {
@@ -1091,8 +1090,7 @@
         "folder": "我喜欢的音乐",
         "favorite": true,
         "meta": {
-          "album": "我喜欢的音乐",
-          "appleMusic": "cn:464023329:464023332"
+          "album": "我喜欢的音乐"
         }
       },
       {
@@ -1104,8 +1102,7 @@
         "folder": "我喜欢的音乐",
         "favorite": true,
         "meta": {
-          "album": "我喜欢的音乐",
-          "appleMusic": "cn:1171897115:1171898023"
+          "album": "我喜欢的音乐"
         }
       },
       {
@@ -1117,8 +1114,7 @@
         "folder": "我喜欢的音乐",
         "favorite": true,
         "meta": {
-          "album": "我喜欢的音乐",
-          "appleMusic": "cn:1708557388:1708558270"
+          "album": "我喜欢的音乐"
         }
       },
       {
@@ -1130,8 +1126,7 @@
         "folder": "我喜欢的音乐",
         "favorite": true,
         "meta": {
-          "album": "我喜欢的音乐",
-          "appleMusic": "cn:536098121:536098124"
+          "album": "我喜欢的音乐"
         }
       },
       {
@@ -1143,8 +1138,7 @@
         "folder": "我喜欢的音乐",
         "favorite": true,
         "meta": {
-          "album": "我喜欢的音乐",
-          "appleMusic": "cn:572453077:572453080"
+          "album": "我喜欢的音乐"
         }
       },
       {
@@ -1156,8 +1150,7 @@
         "folder": "我喜欢的音乐",
         "favorite": true,
         "meta": {
-          "album": "我喜欢的音乐",
-          "appleMusic": "tw:1724720279:1724720282"
+          "album": "我喜欢的音乐"
         }
       },
       {
@@ -1169,8 +1162,7 @@
         "folder": "我喜欢的音乐",
         "favorite": true,
         "meta": {
-          "album": "我喜欢的音乐",
-          "appleMusic": "cn:1788784922:1788784923"
+          "album": "我喜欢的音乐"
         }
       },
       {
@@ -1182,8 +1174,7 @@
         "folder": "我喜欢的音乐",
         "favorite": true,
         "meta": {
-          "album": "我喜欢的音乐",
-          "appleMusic": "cn:571883850:571889396"
+          "album": "我喜欢的音乐"
         }
       },
       {
@@ -1195,8 +1186,7 @@
         "folder": "我喜欢的音乐",
         "favorite": true,
         "meta": {
-          "album": "我喜欢的音乐",
-          "appleMusic": "cn:1413542639:1413542882"
+          "album": "我喜欢的音乐"
         }
       },
       {

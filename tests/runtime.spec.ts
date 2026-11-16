@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 const fixture = JSON.parse(
   readFileSync(
     new URL("./fixtures/story-example/story.json", import.meta.url),
@@ -86,12 +86,19 @@ test.describe("mobile player", () => {
     await thread.getByRole("button", { name: "语音通话", exact: true }).tap();
     const call = thread.getByRole("dialog", { name: "微信语音通话" });
     await expect(call).toBeVisible();
+    const ringtone = thread.locator("audio[loop]");
+    if (existsSync("dist/music/wechat-baby-moon-city-of-stars.mp3")) {
+      await expect(call.getByText("对方铃声：《City of Stars》")).toBeVisible();
+      await expect(ringtone).toHaveAttribute("src", /music\/wechat-baby-moon-city-of-stars\.mp3$/);
+      await expect.poll(() => ringtone.evaluate((el) => (el as HTMLAudioElement).currentTime)).toBeGreaterThan(0);
+    }
     await call.getByRole("button", { name: "挂断" }).tap();
     await expect(call).toHaveCount(0);
+    await expect(ringtone).not.toHaveAttribute("src");
+    expect(await ringtone.evaluate((el) => (el as HTMLAudioElement).paused)).toBe(true);
   });
 
   test("NetEase shows artist credits, whole-row selection and per-track comments", async ({ page }) => {
-    await page.route("https://embed.music.apple.com/**", (route) => route.fulfill({ contentType: "text/html", body: "<p>Apple Music</p>" }));
     await openTemplate(page);
     await page.getByRole("button", { name: "打开网易云音乐", exact: true }).tap();
     await expect(page.getByRole("button", { name: "首页", exact: true })).toBeVisible();
@@ -106,11 +113,7 @@ test.describe("mobile player", () => {
     await page.getByRole("button", { name: "正在播放 慢慢喜欢你" }).tap();
     const player = page.getByRole("region", { name: "正在播放" });
     await expect(player.getByRole("heading", { name: "慢慢喜欢你" })).toBeVisible();
-    await player.getByRole("button", { name: "官方试听" }).tap();
-    await expect(player.getByTitle("Apple Music 官方试听：慢慢喜欢你")).toHaveAttribute(
-      "src", "https://embed.music.apple.com/cn/album/1869049124?i=1869049128",
-    );
-    await player.getByRole("button", { name: "关闭官方试听" }).tap();
+    await expect(player.locator("iframe")).toHaveCount(0);
     const commentsLink = player.getByRole("button", { name: /打开评论/ });
     const count = (await commentsLink.getAttribute("aria-label"))!.match(/\d+/)![0];
     expect(Number(count)).toBeGreaterThanOrEqual(200_000);
@@ -134,37 +137,32 @@ test.describe("mobile player", () => {
     await expect(comments.getByText("这首值得单曲循环")).toBeVisible();
   });
 
-  test("NetEase preserves the linked recordings and stops the embed on close", async ({ page }) => {
-    await page.route("https://embed.music.apple.com/**", (route) => route.fulfill({ contentType: "text/html", body: "<p>Apple Music</p>" }));
+  test("NetEase keeps songs without audio in the queue without starting playback", async ({ page }) => {
     await openTemplate(page);
     await page.getByRole("button", { name: "打开网易云音乐", exact: true }).tap();
     await page.getByRole("button", { name: /那些花儿.*范玮琪/ }).tap();
     await page.getByRole("button", { name: "正在播放 那些花儿" }).tap();
     const player = page.getByRole("region", { name: "正在播放" });
-    await player.getByRole("button", { name: "官方试听" }).tap();
-    await expect(player.getByTitle("Apple Music 官方试听：那些花儿")).toHaveAttribute(
-      "src", "https://embed.music.apple.com/cn/album/536098121?i=536098124",
-    );
-    await player.getByRole("button", { name: "关闭官方试听" }).tap();
+    await expect(player.getByRole("heading", { name: "那些花儿" })).toBeVisible();
+    await expect(player.getByRole("button", { name: "播放", exact: true })).toBeDisabled();
     await player.getByRole("button", { name: "下一首" }).tap();
     await player.getByRole("button", { name: "下一首" }).tap();
-    await expect(player.getByRole("link", { name: "前往 Apple Music 播放" })).toHaveAttribute(
-      "href", "https://music.apple.com/tw/album/1724720279?i=1724720282",
-    );
+    await expect(player.getByRole("heading", { name: "胆小鬼" })).toBeVisible();
+    await expect(player.getByRole("button", { name: "播放", exact: true })).toBeDisabled();
     await expect(player.locator("iframe")).toHaveCount(0);
     await player.getByRole("button", { name: "播放列表" }).tap();
     await player.getByRole("button", { name: /淡季.*音乐合伙人/ }).tap();
-    await expect(player.getByRole("link", { name: "前往 网易云音乐 播放" })).toHaveAttribute(
+    await expect(player.getByRole("link", { name: "前往网易云音乐播放" })).toHaveAttribute(
       "href", "https://music.163.com/song?id=3372978254",
     );
     await player.getByRole("button", { name: "下一首" }).tap();
-    await player.getByRole("button", { name: "官方试听" }).tap();
-    await expect(player.locator("iframe")).toHaveCount(1);
+    await expect(player.getByRole("heading", { name: "慢慢喜欢你" })).toBeVisible();
     await player.getByRole("button", { name: "收起播放页" }).tap();
     await expect(page.locator(".netease-playing iframe")).toHaveCount(0);
   });
 
   test("NetEase plays a local source directly and syncs the mini player with the detail page", async ({ page }) => {
+    const suppliedTrack = existsSync("dist/music/netease-song-01.mp3");
     const sampleRate = 8000;
     const wave = Buffer.alloc(44 + sampleRate * 8 * 2);
     wave.write("RIFF", 0);
@@ -179,7 +177,7 @@ test.describe("mobile player", () => {
     wave.writeUInt16LE(16, 34);
     wave.write("data", 36);
     wave.writeUInt32LE(wave.length - 44, 40);
-    await page.route("**/music/player-test.wav", (route) => {
+    if (!suppliedTrack) await page.route("**/music/player-test.wav", (route) => {
       const range = /^bytes=(\d+)-(\d*)$/.exec(route.request().headers().range ?? "");
       const start = range ? Number(range[1]) : 0;
       const end = range?.[2] ? Math.min(Number(range[2]), wave.length - 1) : wave.length - 1;
@@ -197,7 +195,7 @@ test.describe("mobile player", () => {
       const response = await route.fetch();
       const story = await response.json();
       story.phone.passcode = "";
-      story.data.netease[0].meta.localAudio = "player-test.wav";
+      if (!suppliedTrack) story.data.netease[0].meta.localAudio = "player-test.wav";
       await route.fulfill({ response, json: story });
     });
     await page.goto("/");
@@ -205,17 +203,27 @@ test.describe("mobile player", () => {
     await page.getByRole("button", { name: "打开网易云音乐", exact: true }).tap();
     await page.getByRole("button", { name: /慢慢喜欢你.*莫文蔚/ }).tap();
     const bar = page.locator(".netease-ui .track-player");
+    const audio = page.locator(".netease-ui > audio");
+    await expect.poll(() => audio.evaluate((el) => (el as HTMLAudioElement).duration)).toBeGreaterThan(suppliedTrack ? 60 : 7);
+    if (suppliedTrack) await expect(audio).toHaveAttribute("src", /music\/netease-song-01\.mp3$/);
     await expect(bar.getByRole("button", { name: "暂停", exact: true })).toBeVisible();
     await expect.poll(() => bar.locator("progress").evaluate((el) => (el as HTMLProgressElement).value)).toBeGreaterThan(0);
     await bar.getByRole("button", { name: "正在播放 慢慢喜欢你" }).tap();
     const player = page.getByRole("region", { name: "正在播放" });
     await player.getByRole("button", { name: "暂停", exact: true }).tap();
     await player.getByRole("slider", { name: "播放进度" }).fill("5");
-    await expect.poll(() => page.locator(".netease-ui > audio").evaluate((el) => (el as HTMLAudioElement).currentTime)).toBe(5);
+    await expect.poll(() => audio.evaluate((el) => (el as HTMLAudioElement).currentTime)).toBe(5);
     await player.getByRole("button", { name: "收起播放页" }).tap();
     await expect(bar.locator("progress")).toHaveAttribute("value", "5");
     await bar.getByRole("button", { name: "播放", exact: true }).tap();
     await expect.poll(() => bar.locator("progress").evaluate((el) => (el as HTMLProgressElement).value)).toBeGreaterThan(5);
+    if (existsSync("dist/music/netease-song-02.mp3")) {
+      await bar.getByRole("button", { name: "下一首" }).tap();
+      await expect(bar.getByRole("button", { name: "正在播放 爱你" })).toBeVisible();
+      await expect(audio).toHaveAttribute("src", /music\/netease-song-02\.mp3$/);
+      await expect.poll(() => audio.evaluate((el) => (el as HTMLAudioElement).currentTime)).toBeGreaterThan(0);
+      await expect(bar.getByRole("button", { name: "暂停", exact: true })).toBeVisible();
+    }
   });
 
   test("keeps fifth-row app names above the desktop controls", async ({ page }) => {

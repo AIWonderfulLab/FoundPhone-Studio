@@ -1,5 +1,6 @@
 import { KeyboardContext, NativeComposer } from "./DeviceSystem";
 import { useSkinState } from "./skinState";
+import { localAudioUrl } from "./audio";
 import { Fragment, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   ChevronLeft,
@@ -287,21 +288,18 @@ export function WeChatSkin(p: SkinProps) {
     [searchOpen, setSearchOpen] = useState(false),
     [utility, setUtility] = useState("");
   const [voiceCall, setVoiceCall] = useState<WeChatCall | "">("");
-  const ringRef = useRef<{ context: AudioContext; timer: number } | null>(null);
+  const [ringtoneTitle, setRingtoneTitle] = useState("");
+  const ringtoneAudio = useRef<HTMLAudioElement>(null);
+  const stopCallAudio = useRef<(() => void) | undefined>(undefined);
   const stopVoiceCall = () => {
-    const ring = ringRef.current;
-    ringRef.current = null;
-    if (ring) {
-      window.clearInterval(ring.timer);
-      void ring.context.close();
-    }
+    const stop = stopCallAudio.current;
+    stopCallAudio.current = undefined;
+    stop?.();
     setVoiceCall("");
+    setRingtoneTitle("");
   };
-  const startVoiceCall = (call: WeChatCall) => {
-    if (voiceCall) return;
-    setVoiceCall(call);
+  const startCallTone = () => {
     try {
-      // Original, generic call-progress beep; no commercial song is embedded.
       const context = new AudioContext();
       const beep = () => {
         if (context.state === "closed") return;
@@ -318,18 +316,47 @@ export function WeChatSkin(p: SkinProps) {
         oscillator.stop(context.currentTime + 0.34);
       };
       beep();
-      ringRef.current = { context, timer: window.setInterval(beep, 1900) };
+      const timer = window.setInterval(beep, 1900);
+      stopCallAudio.current = () => {
+        window.clearInterval(timer);
+        void context.close();
+      };
     } catch {
       // The simulated call still works when the browser disallows audio.
     }
   };
-  useEffect(() => () => {
-    const ring = ringRef.current;
-    if (ring) {
-      window.clearInterval(ring.timer);
-      void ring.context.close();
-      ringRef.current = null;
+  const startVoiceCall = (call: WeChatCall) => {
+    if (voiceCall) return;
+    setVoiceCall(call);
+    const ringtone = call === "语音通话"
+      ? p.items.find((item) => item.title === p.thread && localAudioUrl(item.meta.voiceRingtone))
+      : undefined;
+    const source = localAudioUrl(ringtone?.meta.voiceRingtone);
+    const audio = ringtoneAudio.current;
+    if (!source || !audio) {
+      startCallTone();
+      return;
     }
+    const stop = () => {
+      audio.pause();
+      audio.removeAttribute("src");
+      audio.load();
+    };
+    stopCallAudio.current = stop;
+    setRingtoneTitle(ringtone?.meta.voiceRingtoneTitle || "");
+    audio.src = source;
+    void audio.play().catch(() => {
+      if (stopCallAudio.current !== stop) return;
+      stop();
+      stopCallAudio.current = undefined;
+      setRingtoneTitle("");
+      startCallTone();
+    });
+  };
+  useEffect(() => () => {
+    const stop = stopCallAudio.current;
+    stopCallAudio.current = undefined;
+    stop?.();
   }, []);
   const [readThreads, setReadThreads] = useSkinState<string[]>(
     p,
@@ -362,6 +389,7 @@ export function WeChatSkin(p: SkinProps) {
       data-moments={moments}
       data-utility={!!utility}
     >
+      <audio ref={ringtoneAudio} preload="none" loop />
       <div className="app-nav wx-nav">
         <button
           aria-label={utility || p.thread || moments ? "返回" : "收藏"}
@@ -468,8 +496,7 @@ export function WeChatSkin(p: SkinProps) {
               <div className="wx-voice-call-avatar"><Avatar name={p.thread} src={p.items.find((item) => item.title === p.thread && !item.outgoing)?.avatar} /></div>
               <h2>{p.thread}</h2>
               <p>微信{voiceCall} · 呼叫中…</p>
-              {p.thread === "👶🌙" && <small>对方铃声：《爱乐之城》</small>}
-              <small>模拟呼叫提示音</small>
+              <small>{ringtoneTitle ? `对方铃声：《${ringtoneTitle}》` : "模拟呼叫提示音"}</small>
               <button type="button" className="wx-voice-hangup" onClick={stopVoiceCall}>
                 <Phone size={24} /> 挂断
               </button>

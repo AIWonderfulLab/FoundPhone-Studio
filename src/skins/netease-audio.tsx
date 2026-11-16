@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { localAudioUrl } from "../audio";
 import { safeMedia, type Item } from "../schema";
 import type { Props } from "./shared";
 
 export function neteaseAudio(item: Item | null) {
   if (!item) return;
-  const local = item.meta.localAudio;
-  if (/^[a-zA-Z0-9_-]+\.(mp3|m4a|ogg|wav)$/.test(local ?? ""))
-    return import.meta.env.BASE_URL + "music/" + local;
-  return item.kind === "audio" ? safeMedia(item.media) : undefined;
+  return localAudioUrl(item.meta.localAudio) ||
+    (item.kind === "audio" ? safeMedia(item.media) : undefined);
 }
 
 export function useNeteaseAudio(p: Props, track: Item | null, repeat: boolean) {

@@ -2,6 +2,13 @@ import { useEffect, useRef } from "react";
 import type { SkinProps } from "./AppSkins";
 import { safeMedia, type Item } from "./schema";
 import { useSkinState } from "./skinState";
+
+export function localAudioUrl(filename?: string) {
+  if (filename && /^[a-zA-Z0-9_-]+\.(mp3|m4a|ogg|wav)$/.test(filename)) {
+    return import.meta.env.BASE_URL + "music/" + filename;
+  }
+}
+
 export function useTrack(
   p: SkinProps,
   items: Item[],

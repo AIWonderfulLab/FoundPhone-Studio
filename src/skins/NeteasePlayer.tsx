@@ -39,27 +39,10 @@ function clock(seconds: number) {
     .join(":");
 }
 
-export function officialMusicSource(item: Item) {
-  const apple = /^(cn|tw):(\d{1,16}):(\d{1,16})$/.exec(
-    meta(item, "appleMusic"),
-  );
-  if (apple) {
-    const [, region, album, track] = apple;
-    const path = `/${region}/album/${album}?i=${track}`;
-    return {
-      name: "Apple Music",
-      link: "https://music.apple.com" + path,
-      embed:
-        region === "cn" ? "https://embed.music.apple.com" + path : undefined,
-    };
-  }
+export function neteaseTrackLink(item: Item) {
   const netease = meta(item, "neteaseSongId");
-  if (/^\d{1,16}$/.test(netease)) {
-    return {
-      name: "网易云音乐",
-      link: `https://music.163.com/song?id=${netease}`,
-    };
-  }
+  if (/^\d{1,16}$/.test(netease))
+    return `https://music.163.com/song?id=${netease}`;
 }
 
 function RecordCover({ item }: { item: Item }) {
@@ -87,8 +70,6 @@ export function NeteasePlayer({
   playback,
   repeat,
   toggleRepeat,
-  previewOpen,
-  togglePreview,
   step,
   chooseTrack,
   close,
@@ -99,8 +80,6 @@ export function NeteasePlayer({
   playback: ReturnType<typeof useNeteaseAudio>;
   repeat: boolean;
   toggleRepeat: () => void;
-  previewOpen: boolean;
-  togglePreview: () => void;
   step: (direction: number) => void;
   chooseTrack: (item: Item) => void;
   close: () => void;
@@ -110,7 +89,7 @@ export function NeteasePlayer({
   const [showQueue, setShowQueue] = useState(false);
   const { position, duration, playing, error, toggle, seek } = playback;
   const audio = neteaseAudio(item);
-  const official = audio ? undefined : officialMusicSource(item);
+  const externalLink = audio ? undefined : neteaseTrackLink(item);
   const postedComments = p.ui?.[`comments-${item.id}`];
   const totalComments =
     commentCount(item) +
@@ -166,7 +145,7 @@ export function NeteasePlayer({
         <div>
           <time>{clock(Math.floor(position))}</time>
           <span>
-            {audio ? "正在播放" : official?.embed ? "官方试听" : "平台播放"}
+            {audio ? "本地音源" : externalLink ? "平台播放" : "暂无音源"}
           </span>
           <time>{duration ? clock(Math.floor(duration)) : "--:--"}</time>
         </div>
@@ -188,10 +167,10 @@ export function NeteasePlayer({
         <button aria-label="上一首" onClick={() => step(-1)}>
           <SkipBack fill="currentColor" />
         </button>
-        {official && !official.embed ? (
+        {externalLink ? (
           <a
-            aria-label={`前往 ${official.name} 播放`}
-            href={official.link}
+            aria-label="前往网易云音乐播放"
+            href={externalLink}
             target="_blank"
             rel="noreferrer"
           >
@@ -199,10 +178,9 @@ export function NeteasePlayer({
           </a>
         ) : (
           <button
-            aria-label={audio ? (playing ? "暂停" : "播放") : "官方试听"}
-            aria-expanded={official?.embed ? previewOpen : undefined}
-            disabled={!audio && !official}
-            onClick={audio ? toggle : togglePreview}
+            aria-label={playing ? "暂停" : "播放"}
+            disabled={!audio}
+            onClick={toggle}
           >
             {playing ? (
               <Pause size={38} fill="currentColor" />
@@ -222,19 +200,6 @@ export function NeteasePlayer({
           <ListMusic />
         </button>
       </div>
-      {official?.embed && previewOpen && (
-        <section className="netease-official-source" aria-label="官方试听">
-          <button aria-label="关闭官方试听" onClick={togglePreview}>
-            <X size={18} />
-          </button>
-          <iframe
-            title={`Apple Music 官方试听：${item.title}`}
-            src={official.embed}
-            allow="autoplay *; encrypted-media *"
-            sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation-by-user-activation"
-          />
-        </section>
-      )}
       {showQueue && (
         <section className="netease-queue" aria-label="播放列表">
           <header>
@@ -302,13 +267,25 @@ const orders = ["推荐", "最热", "最新"] as const;
 const commentScenes = [
   { name: "末班车", text: "坐上末班车才有空翻歌单。", region: "湖南" },
   { name: "薄荷信封", text: "午休的时候刚好随机到了这首。", region: "四川" },
-  { name: "半杯茉莉", text: "周末打扫房间的时候又把它放出来了。", region: "上海" },
+  {
+    name: "半杯茉莉",
+    text: "周末打扫房间的时候又把它放出来了。",
+    region: "上海",
+  },
   { name: "海盐月亮", text: "跟朋友散步时共享了半边耳机。", region: "山东" },
   { name: "橘色窗台", text: "窗外下雨，突然很想听它。", region: "湖北" },
   { name: "纸飞机", text: "以前写作业时常把这首放在第一首。", region: "北京" },
-  { name: "迟到的云", text: "坐车经过熟悉的路口时想起这首歌。", region: "江西" },
+  {
+    name: "迟到的云",
+    text: "坐车经过熟悉的路口时想起这首歌。",
+    region: "江西",
+  },
   { name: "蓝色邮筒", text: "睡前把耳机的音量调低了一格。", region: "安徽" },
-  { name: "周五的猫", text: "忙完手头的事，终于能完整听一遍。", region: "天津" },
+  {
+    name: "周五的猫",
+    text: "忙完手头的事，终于能完整听一遍。",
+    region: "天津",
+  },
 ];
 
 export function NeteaseComments({

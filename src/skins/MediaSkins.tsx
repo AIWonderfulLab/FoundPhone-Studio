@@ -21,7 +21,7 @@ import { safeMedia, type Item } from "../schema";
 import {
   NeteaseComments,
   NeteasePlayer,
-  officialMusicSource,
+  neteaseTrackLink,
 } from "./NeteasePlayer";
 import { neteaseAudio, useNeteaseAudio } from "./netease-audio";
 import {
@@ -159,17 +159,15 @@ export function NeteaseSkin(p: Props) {
   const [folder, setFolder] = useState(""),
     [track, setTrack] = useTrack(p, p.items);
   const [playerOpen, setPlayerOpen] = useState(false);
-  const [previewOpen, setPreviewOpen] = useState(false);
   const [comments, setComments] = useState<Item | null>(null);
   const [repeat, setRepeat] = useSkinState<boolean>(p, "repeat", false);
   const playback = useNeteaseAudio(p, track, repeat);
   const playable = neteaseAudio(track);
-  const official = track && !playable ? officialMusicSource(track) : undefined;
+  const externalLink = track && !playable ? neteaseTrackLink(track) : undefined;
   const list = folder
     ? items.filter((i) => (i.folder || "我的歌单") === folder)
     : items;
   const chooseTrack = (item: Item) => {
-    setPreviewOpen(false);
     playback.select(item);
     setTrack(item);
   };
@@ -265,10 +263,10 @@ export function NeteaseSkin(p: Props) {
                 <small>{track.sender}</small>
               </span>
             </button>
-            {official && !official.embed ? (
+            {externalLink ? (
               <a
-                aria-label={`前往 ${official.name} 播放`}
-                href={official.link}
+                aria-label="前往网易云音乐播放"
+                href={externalLink}
                 target="_blank"
                 rel="noreferrer"
               >
@@ -276,17 +274,9 @@ export function NeteaseSkin(p: Props) {
               </a>
             ) : (
               <button
-                aria-label={
-                  playable ? (playback.playing ? "暂停" : "播放") : "官方试听"
-                }
-                disabled={!playable && !official}
-                onClick={() => {
-                  if (playable) playback.toggle();
-                  else {
-                    setPlayerOpen(true);
-                    setPreviewOpen(true);
-                  }
-                }}
+                aria-label={playback.playing ? "暂停" : "播放"}
+                disabled={!playable}
+                onClick={playback.toggle}
               >
                 {playable && playback.playing ? (
                   <Pause size={19} />
@@ -323,14 +313,9 @@ export function NeteaseSkin(p: Props) {
             playback={playback}
             repeat={repeat}
             toggleRepeat={() => setRepeat(!repeat)}
-            previewOpen={playerOpen && previewOpen}
-            togglePreview={() => setPreviewOpen(!previewOpen)}
             step={step}
             chooseTrack={chooseTrack}
-            close={() => {
-              setPreviewOpen(false);
-              setPlayerOpen(false);
-            }}
+            close={() => setPlayerOpen(false)}
             openComments={() => openComments(track)}
           />
         </div>

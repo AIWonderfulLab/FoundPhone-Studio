@@ -16,6 +16,15 @@ import { test, expect, type Page } from "@playwright/test";
 test.describe("mobile player", () => {
   test.use({ viewport: { width: 375, height: 667 }, isMobile: true, hasTouch: true });
 
+  test("keeps fifth-row app names above the desktop controls", async ({ page }) => {
+    await page.goto("/?preview=test");
+    await page.getByRole("button", { name: "轻触解锁" }).tap();
+    const grid = page.getByRole("group", { name: "桌面第1页" });
+    for (const name of ["查找", "计算器", "设置", "QQ", "支付宝"]) {
+      await expect(grid.getByText(name, { exact: true })).toBeInViewport({ ratio: 1 });
+    }
+  });
+
   test("fills the viewport and supports swiping up to unlock and return home", async ({ page }) => {
     await page.goto("/");
     const screen = page.locator(".phone-screen");

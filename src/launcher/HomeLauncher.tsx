@@ -255,8 +255,9 @@ export function HomeLauncher(p: Props) {
       suppress.current = true;
       clearTimeout(timer.current);
       setEditing(true);
-      const r = root.current!.getBoundingClientRect(),
-        scale = r.width / 393;
+      const home = root.current!,
+        r = home.getBoundingClientRect(),
+        scale = r.width / home.clientWidth;
       setGhost({
         entry: d.entry,
         x: (e.clientX - r.left) / scale,
@@ -268,18 +269,23 @@ export function HomeLauncher(p: Props) {
       let target = hit?.dataset.homeKey || hit?.dataset.dropZone || "";
       if (target.startsWith("page:") && hit) {
         const box = hit.getBoundingClientRect();
+        const style = getComputedStyle(hit);
+        const leftInset = parseFloat(style.paddingLeft) * scale;
+        const rightInset = parseFloat(style.paddingRight) * scale;
+        const columnWidth = (box.width - leftInset - rightInset) / 4;
+        const rowHeight = box.height / 6;
         const x = Math.max(
             0,
             Math.min(
               3,
               Math.floor(
-                (e.clientX - box.left - 16 * scale) / ((361 / 4) * scale),
+                (e.clientX - box.left - leftInset) / columnWidth,
               ),
             ),
           ),
           y = Math.max(
             0,
-            Math.min(5, Math.floor((e.clientY - box.top) / (99 * scale))),
+            Math.min(5, Math.floor((e.clientY - box.top) / rowHeight)),
           );
         target = `cell:${target.slice(5)}:${x}:${y}`;
       }

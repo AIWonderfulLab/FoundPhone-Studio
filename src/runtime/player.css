@@ -49,4 +49,25 @@
   .story-runtime .ios18 .phone-screen {
     zoom: 1;
   }
+
+  .story-runtime .ios18 .interactive-home .home-pages {
+    container-type: size;
+  }
+
+  .story-runtime .ios18 .interactive-home .home-app-grid {
+    flex-basis: 100%;
+    width: 100%;
+    min-height: 0;
+    height: min(100%, 594px);
+    grid-template-rows: repeat(6, minmax(0, 1fr));
+  }
+
+  .story-runtime .ios18 .home-app-grid .launcher-cell {
+    --launcher-icon-size: clamp(0px, calc(16.666cqh - 24px), 62px);
+  }
+
+  .story-runtime .ios18 .home-app-grid .launcher-cell :is(.app-icon, .folder-icon):not(.folder-icon *) {
+    width: var(--launcher-icon-size);
+    height: var(--launcher-icon-size);
+  }
 }

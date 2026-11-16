@@ -118,6 +118,7 @@ function MessageList({
   onItem,
   onRead,
   onPreview,
+  onDismissPanel,
   whatsapp = false,
 }: {
   items: Item[];
@@ -125,6 +126,7 @@ function MessageList({
   onItem: (i: Item) => void;
   onRead: (id: string) => void;
   onPreview?: (item: Item, trigger: HTMLButtonElement) => void;
+  onDismissPanel?: () => void;
   whatsapp?: boolean;
 }) {
   const messagesRef = useRef<HTMLDivElement>(null);
@@ -142,13 +144,14 @@ function MessageList({
   }, [lastMessageId]);
 
   return (
-    <div ref={messagesRef} className={`skin-messages ${whatsapp ? "wa-wallpaper" : ""}`}>
+    <div ref={messagesRef} className={`skin-messages ${whatsapp ? "wa-wallpaper" : ""}`} onClick={onDismissPanel}>
       {items.map((i, index) => {
         const previous = items[index - 1];
         const showTimestamp =
           i.meta.showTimestamp === "true" || showMessageTimestamp(i.time, previous?.time);
         const changedDate =
           !previous || i.time.slice(0, 10) !== previous.time.slice(0, 10);
+        const canPreview = !creator && onPreview && i.kind === "image" && safeMedia(i.media).startsWith("data:image/");
         return (
           <Fragment key={i.id}>
             {showTimestamp && (
@@ -161,16 +164,16 @@ function MessageList({
                 <Avatar name={i.sender} src={i.avatar} />
               )}
               <button
+                type="button"
                 className="skin-bubble"
+                aria-haspopup={canPreview ? "dialog" : undefined}
                 onClick={(event) => {
                   if (creator) {
                     onItem(i);
                     return;
                   }
                   onRead(i.id);
-                  if (i.kind === "image" && safeMedia(i.media)?.startsWith("data:image/")) {
-                    onPreview?.(i, event.currentTarget);
-                  }
+                  if (canPreview) onPreview(i, event.currentTarget);
                 }}
               >
                 {["image", "audio", "video"].includes(i.kind) ? (
@@ -236,7 +239,11 @@ const weChatActions = [
 
 type WeChatCall = "语音通话" | "视频通话";
 
-function WeChatComposer({ p, onCall }: { p: SkinProps; onCall: (call: WeChatCall) => void }) {
+function WeChatConversation({ p, onCall, onPreview }: {
+  p: SkinProps;
+  onCall: (call: WeChatCall) => void;
+  onPreview: (item: Item, trigger: HTMLButtonElement) => void;
+}) {
   const [panel, setPanel] = useState("");
   const [photo, setPhoto] = useState<Item | null>(null);
   const setKeyboard = useContext(KeyboardContext);
@@ -247,6 +254,14 @@ function WeChatComposer({ p, onCall }: { p: SkinProps; onCall: (call: WeChatCall
   const pictures = p.albumPhotos?.filter((item) => safeMedia(item.media)).reverse() ?? [];
   return (
     <>
+      <MessageList
+        items={p.items.filter((item) => item.title === p.thread)}
+        creator={p.creator}
+        onItem={p.onItem}
+        onRead={p.onRead}
+        onPreview={onPreview}
+        onDismissPanel={panel ? close : undefined}
+      />
       <Compose
         creator={p.creator}
         onAdd={p.onAdd}
@@ -531,15 +546,12 @@ export function WeChatSkin(p: SkinProps) {
         </div>
       ) : p.thread ? (
         <>
-          <MessageList
+          <WeChatConversation
             key={p.thread}
-            items={p.items.filter((i) => i.title === p.thread)}
-            creator={p.creator}
-            onItem={p.onItem}
-            onRead={p.onRead}
+            p={p}
+            onCall={startVoiceCall}
             onPreview={(item, trigger) => setPhoto({ item, trigger })}
           />
-          <WeChatComposer key={p.thread} p={p} onCall={startVoiceCall} />
           {photo && <WeChatImageViewer {...photo} onClose={() => setPhoto(null)} />}
           {voiceCall && (
             <div className="wx-voice-call-screen" role="dialog" aria-label={`微信${voiceCall}`}>

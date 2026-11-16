@@ -50,6 +50,7 @@ test.describe("mobile player", () => {
     await photo.scrollIntoViewIfNeeded();
     await expect(photo).toBeVisible();
     const imageBubble = photo.locator("..");
+    await expect(imageBubble).toHaveAttribute("aria-haspopup", "dialog");
     await expect(imageBubble).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
     await expect(imageBubble).toHaveCSS("padding", "0px");
     expect(await imageBubble.evaluate((el) => getComputedStyle(el, "::before").content)).toBe("none");
@@ -79,6 +80,10 @@ test.describe("mobile player", () => {
     await expect(thread.getByRole("button", { name: "语音通话", exact: true })).toHaveCount(0);
     await thread.getByRole("button", { name: "更多聊天功能" }).tap();
     const actions = thread.getByRole("region", { name: "聊天功能" });
+    await expect(actions).toBeVisible();
+    await thread.locator(".skin-messages").tap({ position: { x: 5, y: 5 } });
+    await expect(actions).toHaveCount(0);
+    await thread.getByRole("button", { name: "更多聊天功能" }).tap();
     await expect(actions.getByRole("button")).toHaveText([
       "照片", "拍摄", "视频通话", "位置", "红包", "礼物", "转账", "问小微",
     ]);

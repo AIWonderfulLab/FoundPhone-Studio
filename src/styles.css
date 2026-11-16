@@ -5030,6 +5030,10 @@ label {
   background: #343434;
   color: #eee;
 }
+.wechat-ui .skin-bubble[aria-haspopup="dialog"] {
+  cursor: zoom-in;
+  touch-action: manipulation;
+}
 .wx-image-viewer {
   position: absolute;
   inset: 0;

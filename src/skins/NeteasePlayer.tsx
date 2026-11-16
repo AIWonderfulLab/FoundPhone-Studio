@@ -13,10 +13,11 @@ import {
   ThumbsUp,
   X,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { safeMedia, type Item } from "../schema";
 import { useSkinState } from "../skinState";
 import { Avatar, meta, type Props } from "./shared";
+import { neteaseAudio, type useNeteaseAudio } from "./netease-audio";
 import "./netease-player.css";
 
 function trackSeed(id: string) {
@@ -27,7 +28,9 @@ function trackSeed(id: string) {
 }
 
 function commentCount(item: Item) {
-  return 280 + ((Math.imul(trackSeed(item.id), 2654435761) >>> 0) % 11900);
+  return (
+    200_000 + ((Math.imul(trackSeed(item.id), 2654435761) >>> 0) % 780_001)
+  );
 }
 
 function clock(seconds: number) {
@@ -36,7 +39,7 @@ function clock(seconds: number) {
     .join(":");
 }
 
-function officialMusicSource(item: Item) {
+export function officialMusicSource(item: Item) {
   const apple = /^(cn|tw):(\d{1,16}):(\d{1,16})$/.exec(
     meta(item, "appleMusic"),
   );
@@ -81,9 +84,11 @@ function RecordCover({ item }: { item: Item }) {
 export function NeteasePlayer({
   p,
   item,
-  opened,
-  playing,
-  setPlaying,
+  playback,
+  repeat,
+  toggleRepeat,
+  previewOpen,
+  togglePreview,
   step,
   chooseTrack,
   close,
@@ -91,71 +96,25 @@ export function NeteasePlayer({
 }: {
   p: Props;
   item: Item;
-  opened: boolean;
-  playing: boolean;
-  setPlaying: (playing: boolean) => void;
+  playback: ReturnType<typeof useNeteaseAudio>;
+  repeat: boolean;
+  toggleRepeat: () => void;
+  previewOpen: boolean;
+  togglePreview: () => void;
   step: (direction: number) => void;
   chooseTrack: (item: Item) => void;
   close: () => void;
   openComments: () => void;
 }) {
   const [liked, setLiked] = useSkinState(p, `liked-${item.id}`, item.favorite);
-  const [repeat, setRepeat] = useSkinState<boolean>(p, "repeat", false);
-  const [seconds, setSeconds] = useState(0);
   const [showQueue, setShowQueue] = useState(false);
-  const [audioDuration, setAudioDuration] = useState(0);
-  const [audioPlaying, setAudioPlaying] = useState(false);
-  const [playError, setPlayError] = useState("");
-  const audioElement = useRef<HTMLAudioElement>(null);
-  const audio = item.kind === "audio" ? safeMedia(item.media) : undefined;
+  const { position, duration, playing, error, toggle, seek } = playback;
+  const audio = neteaseAudio(item);
   const official = audio ? undefined : officialMusicSource(item);
-  const simulatePlayback = !audio && !official;
-  const progressKey = `audio-${item.id}`;
-  const parts = meta(item, "duration").match(/^(\d+):([0-5]\d)$/);
-  const duration = audio
-    ? audioDuration
-    : (parts && Number(parts[1]) * 60 + Number(parts[2])) || 203;
-
-  useEffect(() => {
-    const element = audioElement.current;
-    if (!element) return;
-    if (!playing) {
-      element.pause();
-      return;
-    }
-    let cancelled = false;
-    void element.play().catch(() => {
-      if (cancelled) return;
-      setPlaying(false);
-      setPlayError("暂时无法播放，请点播放重试");
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [audio, playing, setPlaying]);
-
-  useEffect(() => {
-    if (!simulatePlayback || !playing) return;
-    const timer = window.setInterval(
-      () =>
-        setSeconds((time) =>
-          time >= duration ? (repeat ? 0 : duration) : time + 1,
-        ),
-      1000,
-    );
-    return () => window.clearInterval(timer);
-  }, [simulatePlayback, duration, playing, repeat]);
-
-  const active = audio
-    ? audioPlaying
-    : simulatePlayback && playing && (repeat || seconds < duration);
-  const seek = (time: number) => {
-    if (audioElement.current && audioDuration) {
-      audioElement.current.currentTime = time;
-      p.onUi?.(progressKey, time);
-    }
-    setSeconds(time);
-  };
+  const postedComments = p.ui?.[`comments-${item.id}`];
+  const totalComments =
+    commentCount(item) +
+    (Array.isArray(postedComments) ? postedComments.length : 0);
   return (
     <section className="netease-playing" aria-label="正在播放">
       <header className="netease-overlay-header">
@@ -165,7 +124,7 @@ export function NeteasePlayer({
         <span>心动</span>
       </header>
       <div className="netease-turntable">
-        <div className="netease-turntable-disc" data-playing={active}>
+        <div className="netease-turntable-disc" data-playing={playing}>
           <RecordCover item={item} />
         </div>
         <span className="netease-tonearm" aria-hidden="true">
@@ -186,117 +145,66 @@ export function NeteasePlayer({
         </button>
         <button
           className="netease-comment-link"
-          aria-label={`打开评论（${commentCount(item)}）`}
+          aria-label={`打开评论（${totalComments}）`}
           onClick={openComments}
         >
           <MessageCircle size={25} />
-          <sup>{commentCount(item)}</sup>
+          <sup>{Math.floor(totalComments / 1000) / 10}万</sup>
         </button>
       </div>
-      {audio && (
-        <audio
-          ref={audioElement}
-          src={audio}
-          preload="metadata"
-          loop={repeat}
-          onLoadedMetadata={(event) => {
-            const element = event.currentTarget;
-            if (!Number.isFinite(element.duration)) return;
-            setAudioDuration(Math.floor(element.duration));
-            const saved = p.ui?.[progressKey];
-            if (
-              typeof saved === "number" &&
-              saved > 0 &&
-              saved < element.duration
-            ) {
-              element.currentTime = saved;
-              setSeconds(Math.floor(saved));
-            }
-          }}
-          onPlaying={() => {
-            setAudioPlaying(true);
-            setPlayError("");
-          }}
-          onPause={(event) => {
-            setAudioPlaying(false);
-            p.onUi?.(progressKey, event.currentTarget.currentTime);
-          }}
-          onEnded={() => {
-            setAudioPlaying(false);
-            setPlaying(false);
-            p.onUi?.(progressKey, 0);
-          }}
-          onTimeUpdate={(event) =>
-            setSeconds(Math.floor(event.currentTarget.currentTime))
-          }
-          onError={() => {
-            setPlaying(false);
-            setPlayError("音频加载失败");
-          }}
+      <div className="netease-progress">
+        <input
+          aria-label="播放进度"
+          type="range"
+          min={0}
+          max={duration || 0}
+          step={0.1}
+          value={position}
+          disabled={!audio || !duration}
+          onChange={(event) => seek(Number(event.target.value))}
         />
-      )}
-      {official ? (
-        <div className="netease-official-source">
-          {official.embed && opened && (
-            <iframe
-              title={`Apple Music 官方试听：${item.title}`}
-              src={official.embed}
-              allow="autoplay *; encrypted-media *"
-              sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation-by-user-activation"
-            />
-          )}
-          <a href={official.link} target="_blank" rel="noreferrer">
-            {official.embed
-              ? `在 ${official.name} 打开`
-              : `前往 ${official.name} 播放`}
-          </a>
+        <div>
+          <time>{clock(Math.floor(position))}</time>
+          <span>
+            {audio ? "正在播放" : official?.embed ? "官方试听" : "平台播放"}
+          </span>
+          <time>{duration ? clock(Math.floor(duration)) : "--:--"}</time>
         </div>
-      ) : (
-        <div className="netease-progress">
-          <input
-            aria-label="播放进度"
-            type="range"
-            min={0}
-            max={duration}
-            value={seconds}
-            disabled={Boolean(audio && !duration)}
-            onChange={(event) => seek(Number(event.target.value))}
-          />
-          <div>
-            <time>{clock(seconds)}</time>
-            <span>{audio ? "完整录音" : "演示 · 暂无音源"}</span>
-            <time>{clock(duration)}</time>
-          </div>
-        </div>
-      )}
-      {playError && (
+      </div>
+      {error && (
         <small className="netease-recording-credit" role="status">
-          {playError}
+          {error}
         </small>
       )}
       <div className="netease-transport">
-        {!official && (
-          <button
-            aria-label="单曲循环"
-            aria-pressed={repeat}
-            onClick={() => setRepeat(!repeat)}
-          >
-            <Repeat />
-          </button>
-        )}
+        <button
+          aria-label="单曲循环"
+          aria-pressed={repeat}
+          disabled={!audio}
+          onClick={toggleRepeat}
+        >
+          <Repeat />
+        </button>
         <button aria-label="上一首" onClick={() => step(-1)}>
           <SkipBack fill="currentColor" />
         </button>
-        {!official && (
-          <button
-            aria-label={active ? "暂停" : "播放"}
-            onClick={() => {
-              if (duration && seconds >= duration) seek(0);
-              setPlayError("");
-              setPlaying(!active);
-            }}
+        {official && !official.embed ? (
+          <a
+            aria-label={`前往 ${official.name} 播放`}
+            href={official.link}
+            target="_blank"
+            rel="noreferrer"
           >
-            {active ? (
+            <Play size={38} fill="currentColor" />
+          </a>
+        ) : (
+          <button
+            aria-label={audio ? (playing ? "暂停" : "播放") : "官方试听"}
+            aria-expanded={official?.embed ? previewOpen : undefined}
+            disabled={!audio && !official}
+            onClick={audio ? toggle : togglePreview}
+          >
+            {playing ? (
               <Pause size={38} fill="currentColor" />
             ) : (
               <Play size={38} fill="currentColor" />
@@ -314,6 +222,19 @@ export function NeteasePlayer({
           <ListMusic />
         </button>
       </div>
+      {official?.embed && previewOpen && (
+        <section className="netease-official-source" aria-label="官方试听">
+          <button aria-label="关闭官方试听" onClick={togglePreview}>
+            <X size={18} />
+          </button>
+          <iframe
+            title={`Apple Music 官方试听：${item.title}`}
+            src={official.embed}
+            allow="autoplay *; encrypted-media *"
+            sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation-by-user-activation"
+          />
+        </section>
+      )}
       {showQueue && (
         <section className="netease-queue" aria-label="播放列表">
           <header>
@@ -378,6 +299,17 @@ const demoComments = [
 ];
 
 const orders = ["推荐", "最热", "最新"] as const;
+const commentScenes = [
+  { name: "末班车", text: "坐上末班车才有空翻歌单。", region: "湖南" },
+  { name: "薄荷信封", text: "午休的时候刚好随机到了这首。", region: "四川" },
+  { name: "半杯茉莉", text: "周末打扫房间的时候又把它放出来了。", region: "上海" },
+  { name: "海盐月亮", text: "跟朋友散步时共享了半边耳机。", region: "山东" },
+  { name: "橘色窗台", text: "窗外下雨，突然很想听它。", region: "湖北" },
+  { name: "纸飞机", text: "以前写作业时常把这首放在第一首。", region: "北京" },
+  { name: "迟到的云", text: "坐车经过熟悉的路口时想起这首歌。", region: "江西" },
+  { name: "蓝色邮筒", text: "睡前把耳机的音量调低了一格。", region: "安徽" },
+  { name: "周五的猫", text: "忙完手头的事，终于能完整听一遍。", region: "天津" },
+];
 
 export function NeteaseComments({
   p,
@@ -398,13 +330,18 @@ export function NeteaseComments({
     [],
   );
   const seed = trackSeed(item.id);
-  const demo = Array.from({ length: 4 }, (_, index) => {
+  const demo = Array.from({ length: 50 }, (_, index) => {
     const comment = demoComments[(index + seed) % demoComments.length];
+    const scene = commentScenes[Math.floor(index / demoComments.length) - 1];
+    const name = scene ? `${scene.name}·${comment.name}` : comment.name;
+    const votes = Math.imul(seed ^ (index + 1), 2654435761) >>> 0;
     return {
       ...comment,
-      id: comment.name,
-      date: `${index + 1} 天前 · ${comment.region}`,
-      votes: 45 + ((seed >>> index) % 2300),
+      name,
+      id: name,
+      body: scene ? scene.text + comment.body : comment.body,
+      date: `${index + 1} 天前 · ${scene?.region ?? comment.region}`,
+      votes: 45 + (votes % 2300),
     };
   });
   const ordered =
@@ -440,7 +377,7 @@ export function NeteaseComments({
         </div>
       </div>
       <div className="netease-comment-filters">
-        <strong>评论 ({commentCount(item) + own.length})</strong>
+        <strong>评论 ({entries.length})</strong>
         <div>
           {orders.map((name) => (
             <button

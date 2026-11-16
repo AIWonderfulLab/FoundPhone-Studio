@@ -7,6 +7,7 @@ import {
   Home,
   MessageCircle,
   Music,
+  Pause,
   Play,
   Plus,
   Search,
@@ -17,7 +18,12 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { safeMedia, type Item } from "../schema";
-import { NeteaseComments, NeteasePlayer } from "./NeteasePlayer";
+import {
+  NeteaseComments,
+  NeteasePlayer,
+  officialMusicSource,
+} from "./NeteasePlayer";
+import { neteaseAudio, useNeteaseAudio } from "./netease-audio";
 import {
   Avatar,
   Empty,
@@ -153,14 +159,19 @@ export function NeteaseSkin(p: Props) {
   const [folder, setFolder] = useState(""),
     [track, setTrack] = useTrack(p, p.items);
   const [playerOpen, setPlayerOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [comments, setComments] = useState<Item | null>(null);
-  const [playing, setPlaying] = useState(false);
+  const [repeat, setRepeat] = useSkinState<boolean>(p, "repeat", false);
+  const playback = useNeteaseAudio(p, track, repeat);
+  const playable = neteaseAudio(track);
+  const official = track && !playable ? officialMusicSource(track) : undefined;
   const list = folder
     ? items.filter((i) => (i.folder || "我的歌单") === folder)
     : items;
   const chooseTrack = (item: Item) => {
+    setPreviewOpen(false);
+    playback.select(item);
     setTrack(item);
-    setPlaying(true);
   };
   const step = (direction: number) => {
     if (!track || !p.items.length) return;
@@ -175,6 +186,7 @@ export function NeteaseSkin(p: Props) {
   const overlay = Boolean(comments || (track && playerOpen));
   return (
     <div className="catalog-skin netease-ui">
+      {playback.media}
       <div className="netease-library" inert={overlay}>
         <Header p={p} />
         <div className="catalog-scroll">
@@ -236,6 +248,13 @@ export function NeteaseSkin(p: Props) {
         </div>
         {track && (
           <div className="track-player">
+            {playable && playback.duration > 0 && (
+              <progress
+                aria-label="底栏播放进度"
+                max={playback.duration}
+                value={playback.position}
+              />
+            )}
             <button
               aria-label={`正在播放 ${track.title}`}
               onClick={() => setPlayerOpen(true)}
@@ -246,6 +265,36 @@ export function NeteaseSkin(p: Props) {
                 <small>{track.sender}</small>
               </span>
             </button>
+            {official && !official.embed ? (
+              <a
+                aria-label={`前往 ${official.name} 播放`}
+                href={official.link}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Play size={19} />
+              </a>
+            ) : (
+              <button
+                aria-label={
+                  playable ? (playback.playing ? "暂停" : "播放") : "官方试听"
+                }
+                disabled={!playable && !official}
+                onClick={() => {
+                  if (playable) playback.toggle();
+                  else {
+                    setPlayerOpen(true);
+                    setPreviewOpen(true);
+                  }
+                }}
+              >
+                {playable && playback.playing ? (
+                  <Pause size={19} />
+                ) : (
+                  <Play size={19} />
+                )}
+              </button>
+            )}
             <button aria-label="下一首" onClick={() => step(1)}>
               <SkipForward size={19} />
             </button>
@@ -271,12 +320,17 @@ export function NeteaseSkin(p: Props) {
             key={track.id}
             p={p}
             item={track}
-            opened={playerOpen}
-            playing={playing}
-            setPlaying={setPlaying}
+            playback={playback}
+            repeat={repeat}
+            toggleRepeat={() => setRepeat(!repeat)}
+            previewOpen={playerOpen && previewOpen}
+            togglePreview={() => setPreviewOpen(!previewOpen)}
             step={step}
             chooseTrack={chooseTrack}
-            close={() => setPlayerOpen(false)}
+            close={() => {
+              setPreviewOpen(false);
+              setPlayerOpen(false);
+            }}
             openComments={() => openComments(track)}
           />
         </div>
@@ -594,4 +648,3 @@ export function NetflixSkin(p: Props) {
     </div>
   );
 }
-

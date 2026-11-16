@@ -156,8 +156,9 @@ export function SpotifySkin(p: Props) {
 }
 export function NeteaseSkin(p: Props) {
   const { tab, setTab, q, setQ, items } = useContent(p, "首页");
-  const [folder, setFolder] = useState(""),
-    [track, setTrack] = useTrack(p, p.items);
+  const [folder, setFolder] = useState("");
+  const [trackId, setTrackId] = useState("");
+  const track = p.items.find((item) => item.id === trackId) ?? null;
   const [playerOpen, setPlayerOpen] = useState(false);
   const [comments, setComments] = useState<Item | null>(null);
   const [repeat, setRepeat] = useSkinState<boolean>(p, "repeat", false);
@@ -169,7 +170,8 @@ export function NeteaseSkin(p: Props) {
     : items;
   const chooseTrack = (item: Item) => {
     playback.select(item);
-    setTrack(item);
+    setTrackId(item.id);
+    p.onRead(item.id);
   };
   const step = (direction: number) => {
     if (!track || !p.items.length) return;

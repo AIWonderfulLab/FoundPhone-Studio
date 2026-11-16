@@ -2,6 +2,7 @@ import { KeyboardContext, NativeComposer } from "./DeviceSystem";
 import { useSkinState } from "./skinState";
 import { localAudioUrl } from "./audio";
 import { Fragment, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   ChevronLeft,
   Plus,
@@ -35,6 +36,7 @@ import {
   Gift,
   MapPin,
   Wallet,
+  X,
 } from "lucide-react";
 import { safeMedia, type Item, type UiValue } from "./schema";
 export type SkinProps = {
@@ -115,12 +117,14 @@ function MessageList({
   creator,
   onItem,
   onRead,
+  onPreview,
   whatsapp = false,
 }: {
   items: Item[];
   creator: boolean;
   onItem: (i: Item) => void;
   onRead: (id: string) => void;
+  onPreview?: (item: Item, trigger: HTMLButtonElement) => void;
   whatsapp?: boolean;
 }) {
   const messagesRef = useRef<HTMLDivElement>(null);
@@ -158,7 +162,16 @@ function MessageList({
               )}
               <button
                 className="skin-bubble"
-                onClick={() => (creator ? onItem(i) : onRead(i.id))}
+                onClick={(event) => {
+                  if (creator) {
+                    onItem(i);
+                    return;
+                  }
+                  onRead(i.id);
+                  if (i.kind === "image" && safeMedia(i.media)?.startsWith("data:image/")) {
+                    onPreview?.(i, event.currentTarget);
+                  }
+                }}
               >
                 {["image", "audio", "video"].includes(i.kind) ? (
                   <ItemMedia item={i} />
@@ -280,6 +293,40 @@ function WeChatComposer({ p, onCall }: { p: SkinProps; onCall: (call: WeChatCall
   );
 }
 
+function WeChatImageViewer({ item, trigger, onClose }: {
+  item: Item;
+  trigger: HTMLButtonElement;
+  onClose: () => void;
+}) {
+  const closeButton = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    closeButton.current?.focus({ preventScroll: true });
+    return () => trigger.focus({ preventScroll: true });
+  }, [trigger]);
+
+  return createPortal(
+    <div
+      className="wx-image-viewer"
+      role="dialog"
+      aria-modal="true"
+      aria-label="查看图片"
+      onKeyDown={(event) => {
+        if (event.key === "Tab") event.preventDefault();
+        if (event.key === "Escape") {
+          event.stopPropagation();
+          onClose();
+        }
+      }}
+    >
+      <button type="button" ref={closeButton} aria-label="关闭图片" onClick={onClose}>
+        <img src={safeMedia(item.media)} alt={item.meta.alt || item.title} />
+        <X aria-hidden="true" />
+      </button>
+    </div>,
+    trigger.closest(".phone-screen") ?? document.body,
+  );
+}
+
 export function WeChatSkin(p: SkinProps) {
   const [tab, setTab] = useState("微信"),
     [query, setQuery] = useState(""),
@@ -288,6 +335,7 @@ export function WeChatSkin(p: SkinProps) {
     [searchOpen, setSearchOpen] = useState(false),
     [utility, setUtility] = useState("");
   const [voiceCall, setVoiceCall] = useState<WeChatCall | "">("");
+  const [photo, setPhoto] = useState<{ item: Item; trigger: HTMLButtonElement } | null>(null);
   const [ringtoneTitle, setRingtoneTitle] = useState("");
   const ringtoneAudio = useRef<HTMLAudioElement>(null);
   const stopCallAudio = useRef<(() => void) | undefined>(undefined);
@@ -489,8 +537,10 @@ export function WeChatSkin(p: SkinProps) {
             creator={p.creator}
             onItem={p.onItem}
             onRead={p.onRead}
+            onPreview={(item, trigger) => setPhoto({ item, trigger })}
           />
           <WeChatComposer key={p.thread} p={p} onCall={startVoiceCall} />
+          {photo && <WeChatImageViewer {...photo} onClose={() => setPhoto(null)} />}
           {voiceCall && (
             <div className="wx-voice-call-screen" role="dialog" aria-label={`微信${voiceCall}`}>
               <div className="wx-voice-call-avatar"><Avatar name={p.thread} src={p.items.find((item) => item.title === p.thread && !item.outgoing)?.avatar} /></div>

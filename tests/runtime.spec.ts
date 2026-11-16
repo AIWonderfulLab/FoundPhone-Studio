@@ -54,6 +54,13 @@ test.describe("mobile player", () => {
     await expect(imageBubble).toHaveCSS("padding", "0px");
     expect(await imageBubble.evaluate((el) => getComputedStyle(el, "::before").content)).toBe("none");
     await expect.poll(() => photo.evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+    await photo.tap();
+    const viewer = page.getByRole("dialog", { name: "查看图片" });
+    await expect(viewer.getByRole("img", { name: /酒店桌上的早餐/ })).toBeVisible();
+    expect(await viewer.boundingBox()).toEqual(await page.locator(".phone-screen").boundingBox());
+    await viewer.getByRole("button", { name: "关闭图片" }).tap();
+    await expect(viewer).toHaveCount(0);
+    await expect(imageBubble).toBeFocused();
     const messages = await thread.locator(".skin-messages > :is(.skin-date, .skin-message)").evaluateAll((nodes) =>
       nodes.map((node) => node.querySelector('img[alt*="酒店桌上的早餐"]')
         ? "早餐照"
@@ -193,8 +200,13 @@ test.describe("mobile player", () => {
     await page.goto("/");
     await page.getByRole("button", { name: "轻触解锁" }).tap();
     await page.getByRole("button", { name: "打开网易云音乐", exact: true }).tap();
-    await page.getByRole("button", { name: /慢慢喜欢你.*莫文蔚/ }).tap();
     const bar = page.locator(".netease-ui .track-player");
+    const selectedSongs = page.locator('.netease-ui [aria-pressed="true"]');
+    const song = page.getByRole("button", { name: /慢慢喜欢你.*莫文蔚/ });
+    await expect(selectedSongs).toHaveCount(0);
+    await expect(bar).toHaveCount(0);
+    await song.tap();
+    await expect(song).toHaveAttribute("aria-pressed", "true");
     const audio = page.locator(".netease-ui > audio");
     await expect.poll(() => audio.evaluate((el) => (el as HTMLAudioElement).duration)).toBeGreaterThan(suppliedTrack ? 60 : 7);
     if (suppliedTrack) await expect(audio).toHaveAttribute("src", /music\/netease-song-01\.mp3$/);

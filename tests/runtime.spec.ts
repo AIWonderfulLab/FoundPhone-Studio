@@ -72,8 +72,10 @@ test.describe("mobile player", () => {
       "08:30", "我起来了", "08:35", "早餐照", "08:45", "我都吃光光了😊",
     ]);
     const rain = thread.getByRole("img", { name: /小雨中的高架桥/ });
-    await rain.scrollIntoViewIfNeeded();
     await expect.poll(() => rain.evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+    await rain.tap();
+    await expect(viewer.getByRole("img", { name: /小雨中的高架桥/ })).toBeVisible();
+    await viewer.getByRole("button", { name: "关闭图片" }).tap();
     await expect(rain.locator("xpath=ancestor::div[contains(@class, 'skin-message')][1]/following-sibling::div[contains(@class, 'skin-message')][1]"))
       .toContainText("知道啦 广州现在下小雨呢");
 

@@ -75,7 +75,7 @@ function Avatar({
     </span>
   );
 }
-function ItemMedia({ item }: { item: Item }) {
+function ItemMedia({ item, eager = false }: { item: Item; eager?: boolean }) {
   const src = safeMedia(item.media);
   return src ? (
     item.kind === "audio" ? (
@@ -83,7 +83,7 @@ function ItemMedia({ item }: { item: Item }) {
     ) : item.kind === "video" ? (
       <video controls playsInline src={src} />
     ) : (
-      <img loading="lazy" alt={item.meta.alt || item.title} src={src} />
+      <img loading={eager ? "eager" : "lazy"} alt={item.meta.alt || item.title} src={src} />
     )
   ) : (
     <div className="skin-photo">
@@ -177,7 +177,7 @@ function MessageList({
                 }}
               >
                 {["image", "audio", "video"].includes(i.kind) ? (
-                  <ItemMedia item={i} />
+                  <ItemMedia item={i} eager={Boolean(canPreview)} />
                 ) : i.kind === "transfer" ? (
                   <div className="skin-transfer">
                     ¥ {i.body}

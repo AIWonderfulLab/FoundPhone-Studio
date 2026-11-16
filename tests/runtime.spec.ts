@@ -12,6 +12,38 @@ test.beforeEach(async ({ page }) => {
   );
 });
 import { test, expect, type Page } from "@playwright/test";
+
+test.describe("mobile player", () => {
+  test.use({ viewport: { width: 375, height: 667 }, isMobile: true, hasTouch: true });
+
+  test("fills the viewport and supports swiping up to unlock and return home", async ({ page }) => {
+    await page.goto("/");
+    const screen = page.locator(".phone-screen");
+    await expect(screen).toBeVisible();
+    expect(await screen.boundingBox()).toEqual({
+      x: 0, y: 0, width: 375, height: 667,
+    });
+
+    const touch = await page.context().newCDPSession(page);
+    const swipeUp = async () => {
+      await touch.send("Input.dispatchTouchEvent", {
+        type: "touchStart", touchPoints: [{ x: 187, y: 650 }],
+      });
+      await touch.send("Input.dispatchTouchEvent", {
+        type: "touchMove", touchPoints: [{ x: 187, y: 550 }],
+      });
+      await touch.send("Input.dispatchTouchEvent", {
+        type: "touchEnd", touchPoints: [],
+      });
+    };
+    await swipeUp();
+    await page.getByRole("button", { name: "打开设置", exact: true }).tap();
+    await expect(page.locator(".app-screen:not([inert])")).toBeVisible();
+    await swipeUp();
+    await expect(page.getByRole("button", { name: "打开设置", exact: true })).toBeVisible();
+  });
+});
+
 async function home(page: Page) {
   await page.getByRole("button", { name: "返回桌面", exact: true }).click();
   await expect(

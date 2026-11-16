@@ -333,13 +333,17 @@ function PhoneRuntime({
               }, 550);
             }
             const box = e.currentTarget.getBoundingClientRect(),
-              x = (e.clientX - box.left) / deviceScale,
-              y = (e.clientY - box.top) / deviceScale;
+              height = e.currentTarget.offsetHeight,
+              scale = box.height / height,
+              x = (e.clientX - box.left) / box.width,
+              y = (e.clientY - box.top) / scale;
+            const zone =
+              y < 58 ? "top" : height - y < 34 ? "bottom" : locked ? "lock" : "";
             gesture.current = {
               x,
               y,
               time: Date.now(),
-              zone: y < 58 ? "top" : y > 818 ? "bottom" : locked ? "lock" : "",
+              zone,
             };
           }}
           onPointerMove={(e) => {
@@ -350,11 +354,12 @@ function PhoneRuntime({
           onPointerUp={(e) => {
             clearTimeout(pressTimer.current);
             const box = e.currentTarget.getBoundingClientRect(),
-              y = (e.clientY - box.top) / deviceScale,
+              scale = box.height / e.currentTarget.offsetHeight,
+              y = (e.clientY - box.top) / scale,
               g = gesture.current;
             const dy = y - g.y;
             if (g.zone === "top" && dy > 65)
-              setPanel(g.x > 230 ? "control" : "notification");
+              setPanel(g.x > 0.585 ? "control" : "notification");
             else if ((g.zone === "bottom" || g.zone === "lock") && dy < -55) {
               gestureConsumed.current = true;
               if (!locked) captureApp();
@@ -364,9 +369,9 @@ function PhoneRuntime({
               } else if (locked) {
                 beginUnlock();
               } else if (g.zone === "bottom" && Date.now() - g.time > 450) {
-                captureApp();
                 setPanel("switcher");
               } else {
+                setHomeRequest((n) => n + 1);
                 setApp("");
                 setPanel("");
                 setFolder("");
@@ -775,21 +780,6 @@ function PhoneRuntime({
           )}
           <button
             className="home-indicator"
-            onTouchStart={(e) => {
-              gesture.current.y = e.touches[0]?.clientY ?? 0;
-            }}
-            onTouchEnd={(e) => {
-              const origin = gesture.current.y;
-              const ending = e.changedTouches[0]?.clientY ?? origin;
-              if (origin - ending < 35 || locked) return;
-              gestureConsumed.current = true;
-              captureApp();
-              setHomeRequest((n) => n + 1);
-              setKeyboard(false);
-              setApp("");
-              setFolder("");
-              setPanel("");
-            }}
             aria-label="返回桌面"
             onClick={() => {
               if (gestureConsumed.current) return;

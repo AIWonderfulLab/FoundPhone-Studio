@@ -1,23 +1,52 @@
 .story-runtime {
+  height: 100vh;
   height: 100dvh;
-  min-height: 320px;
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   overflow: hidden;
+  overscroll-behavior: none;
   background: #111113;
+  color: white;
 }
-.story-runtime .phone-stage {
-  width: 100%;
-  height: 100%;
-  margin: 0;
+
+.story-runtime .phone-shell.ios18 {
+  width: calc(393px * var(--phone-scale));
+  height: calc(852px * var(--phone-scale));
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
-.story-runtime .phone-shell {
-  margin: auto;
+
+.story-runtime .ios18 .phone-screen {
+  border-radius: 0;
 }
-@media (max-width: 430px) {
+
+.story-runtime .phone-shell::before,
+.story-runtime .phone-shell::after,
+.story-runtime .hardware-reflection {
+  display: none;
+}
+
+.story-runtime .status-bar button {
+  touch-action: none;
+}
+
+@media (max-width: 600px) and (orientation: portrait) {
   .story-runtime {
+    padding: env(safe-area-inset-top) env(safe-area-inset-right)
+      env(safe-area-inset-bottom) env(safe-area-inset-left);
     background: #000;
+  }
+
+  .story-runtime .phone-shell.ios18,
+  .story-runtime .ios18 .phone-screen {
+    width: 100%;
+    height: 100%;
+  }
+
+  .story-runtime .ios18 .phone-screen {
+    zoom: 1;
   }
 }

@@ -177,19 +177,11 @@ test.describe("mobile player", () => {
     wave.writeUInt16LE(16, 34);
     wave.write("data", 36);
     wave.writeUInt32LE(wave.length - 44, 40);
-    if (!suppliedTrack) await page.route("**/music/player-test.wav", (route) => {
-      const range = /^bytes=(\d+)-(\d*)$/.exec(route.request().headers().range ?? "");
-      const start = range ? Number(range[1]) : 0;
-      const end = range?.[2] ? Math.min(Number(range[2]), wave.length - 1) : wave.length - 1;
-      return route.fulfill({
-        status: range ? 206 : 200,
-        contentType: "audio/wav",
-        headers: range
-          ? { "Accept-Ranges": "bytes", "Content-Range": `bytes ${start}-${end}/${wave.length}` }
-          : { "Accept-Ranges": "bytes" },
-        body: wave.subarray(start, end + 1),
-      });
-    });
+    const source = suppliedTrack ? "netease-song-01.mp3" : "player-test.wav";
+    await page.route(`**/music/${source}`, (route) => route.fulfill({
+      contentType: suppliedTrack ? "audio/mpeg" : "audio/wav",
+      body: suppliedTrack ? readFileSync("dist/music/netease-song-01.mp3") : wave,
+    }));
     await page.unroute("**/work.json");
     await page.route("**/work.json", async (route) => {
       const response = await route.fetch();

@@ -49,6 +49,10 @@ test.describe("mobile player", () => {
     const photo = thread.getByRole("img", { name: /酒店桌上的早餐/ });
     await photo.scrollIntoViewIfNeeded();
     await expect(photo).toBeVisible();
+    const imageBubble = photo.locator("..");
+    await expect(imageBubble).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+    await expect(imageBubble).toHaveCSS("padding", "0px");
+    expect(await imageBubble.evaluate((el) => getComputedStyle(el, "::before").content)).toBe("none");
     await expect.poll(() => photo.evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
     const messages = await thread.locator(".skin-messages > :is(.skin-date, .skin-message)").evaluateAll((nodes) =>
       nodes.map((node) => node.querySelector('img[alt*="酒店桌上的早餐"]')

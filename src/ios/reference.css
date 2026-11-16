@@ -228,6 +228,16 @@
 .ios18 .wechat-ui .skin-bubble:before {
   top: 13px;
 }
+.ios18 .wechat-ui .skin-message .skin-bubble:has(> img[src]) {
+  padding: 0;
+  background: transparent;
+}
+.ios18 .wechat-ui .skin-message .skin-bubble:has(> img[src])::before {
+  content: none;
+}
+.ios18 .wechat-ui .skin-bubble > img {
+  display: block;
+}
 .ios18 .wechat-ui .skin-compose {
   min-height: 53px;
   height: 53px;

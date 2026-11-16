@@ -54,10 +54,12 @@ export function ensureAppStore(work: Work): Work {
 }
 export function defaultLayout(input: Work): DeviceLayout {
   const w = ensureAppStore(input);
+  const hasB612Shortcut = w.apps.some((a) => a.id === "b612" && a.homeAfter);
   return {
     version: 1,
     workId: w.id,
-    previewLayoutRevision: w.id === "ui-test-phone-v2" ? 1 : 0,
+    previewLayoutRevision:
+      w.id === "ui-test-phone-v2" ? (hasB612Shortcut ? 4 : 1) : 0,
     apps: structuredClone(w.apps)
       .sort((a, b) => (a.id === "appstore" ? -1 : b.id === "appstore" ? 1 : 0))
       .map((a) =>
@@ -156,6 +158,27 @@ export function validateLayout(raw: unknown, input: Work) {
     layout.order = layout.order.filter((id) => !deleted.has(id) && !hidden.has(id));
     layout.previewLayoutRevision = 3;
   }
+  const authoredB612 = w.apps.find((app) => app.id === "b612" && app.homeAfter);
+  if (w.id === "ui-test-phone-v2" && authoredB612 && layout.previewLayoutRevision < 4) {
+    const b612 = layout.apps.find((app) => app.id === "b612")!;
+    const camera = layout.apps.find((app) => app.id === "camera");
+    if (camera?.dock) {
+      camera.dock = false;
+      layout.apps.splice(layout.apps.indexOf(b612), 1);
+      layout.apps.splice(layout.apps.indexOf(camera), 0, b612);
+    }
+    const dockHasRoom = layout.apps.filter(
+      (app) => app.dock && app.installed && app.visible && app !== b612,
+    ).length < 4;
+    b612.installed = true;
+    b612.visible = true;
+    b612.folder = "";
+    b612.dock = dockHasRoom;
+    b612.homeAfter = authoredB612.homeAfter;
+    delete layout.positions.b612;
+    layout.order = layout.order.filter((id) => id !== "b612");
+    layout.previewLayoutRevision = 4;
+  }
   const entries = homeEntries(layout),
     packed = packHome(entries, layout.positions);
   for (const entry of entries) {
@@ -234,7 +257,9 @@ export type HomeEntry = {
   widget?: Widget;
 };
 export function homeEntries(layout: DeviceLayout): HomeEntry[] {
-  const apps = layout.apps.filter((a) => a.installed && a.visible && !a.dock);
+  const apps = layout.apps.filter(
+    (a) => a.installed && a.visible && (!a.dock || a.homeAfter),
+  );
   const folders = [
     ...new Set(apps.filter((a) => a.folder).map((a) => a.folder)),
   ];
@@ -253,11 +278,20 @@ export function homeEntries(layout: DeviceLayout): HomeEntry[] {
       widget,
     })),
   ];
-  return entries.sort((a, b) => {
+  entries.sort((a, b) => {
     const x = layout.order.indexOf(a.key),
       y = layout.order.indexOf(b.key);
     return (x < 0 ? 999 : x) - (y < 0 ? 999 : y);
   });
+  for (const app of apps) {
+    const anchor = app.homeAfter;
+    if (!anchor || layout.order.includes(app.id)) continue;
+    const from = entries.findIndex((entry) => entry.key === app.id);
+    if (from < 0 || !entries.some((entry) => entry.key === anchor)) continue;
+    const [entry] = entries.splice(from, 1);
+    entries.splice(entries.findIndex((candidate) => candidate.key === anchor) + 1, 0, entry);
+  }
+  return entries;
 }
 export function packHome(
   entries: HomeEntry[],

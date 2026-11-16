@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import blank from "../../stories/blank/story.json";
+import template from "../../stories/template/story.json";
 import { compileStory } from "../story-engine/compiler";
 import {
   defaultLayout,
@@ -10,6 +11,28 @@ import {
   moveHome,
 } from "./layout";
 const work = () => compileStory(blank).work;
+
+it("places B612 after NetEase and in the Camera Dock slot on new and saved layouts", () => {
+  const authored = compileStory(template).work;
+  const fresh = defaultLayout(authored);
+  const old = structuredClone(fresh);
+  old.previewLayoutRevision = 3;
+  old.apps.find((app) => app.id === "camera")!.dock = true;
+  const b612 = old.apps.find((app) => app.id === "b612")!;
+  b612.dock = false;
+  delete b612.homeAfter;
+  old.order = ["b612", "netease"];
+
+  for (const layout of [fresh, validateLayout(old, authored)]) {
+    const home = homeEntries(layout).map((entry) => entry.key);
+    const dock = layout.apps.filter((app) => app.installed && app.visible && app.dock);
+    expect(home.slice(home.indexOf("netease"), home.indexOf("netease") + 2)).toEqual([
+      "netease", "b612",
+    ]);
+    expect(dock.map((app) => app.id)).toEqual(["phone", "messages", "b612", "safari"]);
+  }
+});
+
 describe("device layout", () => {
   it("keeps all registered apps and only defaults installed", () => {
     const l = defaultLayout(work());

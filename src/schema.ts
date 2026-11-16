@@ -115,6 +115,7 @@ export const workSchema = z.object({
         installed: z.boolean().default(true),
         visible: z.boolean(),
         dock: z.boolean(),
+        homeAfter: z.string().min(1).optional(),
         folder: z.string(),
         icon: z.string(),
       }),

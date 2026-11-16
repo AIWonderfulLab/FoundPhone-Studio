@@ -42,11 +42,20 @@
       "name": "相机",
       "installed": true,
       "visible": true,
-      "dock": true,
+      "dock": false,
       "folder": "",
       "icon": ""
     },
-    "b612",
+    {
+      "id": "b612",
+      "name": "B612相机",
+      "installed": true,
+      "visible": true,
+      "dock": true,
+      "homeAfter": "netease",
+      "folder": "",
+      "icon": ""
+    },
     "safari",
     "notes",
     "calendar",

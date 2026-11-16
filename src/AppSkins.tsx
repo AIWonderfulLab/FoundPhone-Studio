@@ -1,6 +1,6 @@
-import { NativeComposer } from "./DeviceSystem";
+import { KeyboardContext, NativeComposer } from "./DeviceSystem";
 import { useSkinState } from "./skinState";
-import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Fragment, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   ChevronLeft,
   Plus,
@@ -30,6 +30,10 @@ import {
   Image as ImageIcon,
   Layers,
   ShoppingBag,
+  ArrowLeftRight,
+  Gift,
+  MapPin,
+  Wallet,
 } from "lucide-react";
 import { safeMedia, type Item, type UiValue } from "./schema";
 export type SkinProps = {
@@ -40,6 +44,7 @@ export type SkinProps = {
   virtualTime?: string;
   name: string;
   items: Item[];
+  albumPhotos?: Item[];
   creator: boolean;
   onRead: (id: string) => void;
   onItem: (i: Item) => void;
@@ -75,7 +80,7 @@ function ItemMedia({ item }: { item: Item }) {
     ) : item.kind === "video" ? (
       <video controls playsInline src={src} />
     ) : (
-      <img loading="lazy" alt={item.title} src={src} />
+      <img loading="lazy" alt={item.meta.alt || item.title} src={src} />
     )
   ) : (
     <div className="skin-photo">
@@ -135,7 +140,8 @@ function MessageList({
     <div ref={messagesRef} className={`skin-messages ${whatsapp ? "wa-wallpaper" : ""}`}>
       {items.map((i, index) => {
         const previous = items[index - 1];
-        const showTimestamp = showMessageTimestamp(i.time, previous?.time);
+        const showTimestamp =
+          i.meta.showTimestamp === "true" || showMessageTimestamp(i.time, previous?.time);
         const changedDate =
           !previous || i.time.slice(0, 10) !== previous.time.slice(0, 10);
         return (
@@ -184,21 +190,95 @@ function Compose({
   creator,
   onAdd,
   wa = false,
+  onMore,
+  expanded,
+  onActivate,
 }: {
   creator: boolean;
   onAdd: () => void;
   wa?: boolean;
+  onMore?: () => void;
+  expanded?: boolean;
+  onActivate?: () => void;
 }) {
   return (
     <div className={`skin-compose ${wa ? "wa-compose" : ""}`}>
       {wa ? <Plus size={20} /> : <Mic size={20} />}
-      <NativeComposer creator={creator} onAdd={onAdd} />
+      <NativeComposer creator={creator} onAdd={onAdd} onActivate={onActivate} />
 
       <Smile size={21} />
-      {wa ? <Mic size={20} /> : <Plus size={22} />}
+      {wa ? <Mic size={20} /> : (
+        <button type="button" className="wx-compose-more" aria-label="更多聊天功能" aria-expanded={expanded} onClick={onMore}>
+          <CirclePlus size={27} />
+        </button>
+      )}
     </div>
   );
 }
+const weChatActions = [
+  ["照片", ImageIcon], ["拍摄", Camera], ["视频通话", Video], ["位置", MapPin],
+  ["红包", Wallet], ["礼物", Gift], ["转账", ArrowLeftRight], ["问小微", MoreHorizontal],
+] as const;
+
+type WeChatCall = "语音通话" | "视频通话";
+
+function WeChatComposer({ p, onCall }: { p: SkinProps; onCall: (call: WeChatCall) => void }) {
+  const [panel, setPanel] = useState("");
+  const [photo, setPhoto] = useState<Item | null>(null);
+  const setKeyboard = useContext(KeyboardContext);
+  const close = () => {
+    setPanel("");
+    setPhoto(null);
+  };
+  const pictures = p.albumPhotos?.filter((item) => safeMedia(item.media)).reverse() ?? [];
+  return (
+    <>
+      <Compose
+        creator={p.creator}
+        onAdd={p.onAdd}
+        expanded={Boolean(panel)}
+        onActivate={close}
+        onMore={() => {
+          setKeyboard(false);
+          if (panel) close();
+          else setPanel("menu");
+        }}
+      />
+      {panel === "menu" ? (
+        <section className="wx-actions" aria-label="聊天功能">
+          {weChatActions.map(([label, Icon]) => (
+            <button key={label} type="button" onClick={() => setPanel(label)}>
+              <span><Icon size={27} /></span>
+              {label}
+            </button>
+          ))}
+        </section>
+      ) : panel && (
+        <section className="wx-action-sheet" aria-label={panel === "视频通话" ? "选择通话方式" : panel}>
+          {panel === "视频通话" ? (
+            (["视频通话", "语音通话"] as const).map((call) => (
+              <button type="button" key={call} onClick={() => {
+                close();
+                onCall(call);
+              }}>{call === "语音通话" ? <Phone size={19} /> : <Video size={19} />}{call}</button>
+            ))
+          ) : panel === "照片" ? (
+            photo ? <ItemMedia item={photo} /> : pictures.length ? (
+              <div className="wx-action-photos">
+                {pictures.map((item) => <button type="button" key={item.id} onClick={() => setPhoto(item)}><ItemMedia item={item} /></button>)}
+              </div>
+            ) : <p>相册暂无照片</p>
+          ) : <p>{panel}暂未接入模拟手机</p>}
+          <button type="button" onClick={() => {
+            if (photo) setPhoto(null);
+            else setPanel("menu");
+          }}>{photo ? "返回相册" : "返回功能菜单"}</button>
+        </section>
+      )}
+    </>
+  );
+}
+
 export function WeChatSkin(p: SkinProps) {
   const [tab, setTab] = useState("微信"),
     [query, setQuery] = useState(""),
@@ -206,7 +286,7 @@ export function WeChatSkin(p: SkinProps) {
     [menu, setMenu] = useState(false),
     [searchOpen, setSearchOpen] = useState(false),
     [utility, setUtility] = useState("");
-  const [voiceCall, setVoiceCall] = useState(false);
+  const [voiceCall, setVoiceCall] = useState<WeChatCall | "">("");
   const ringRef = useRef<{ context: AudioContext; timer: number } | null>(null);
   const stopVoiceCall = () => {
     const ring = ringRef.current;
@@ -215,11 +295,11 @@ export function WeChatSkin(p: SkinProps) {
       window.clearInterval(ring.timer);
       void ring.context.close();
     }
-    setVoiceCall(false);
+    setVoiceCall("");
   };
-  const startVoiceCall = () => {
+  const startVoiceCall = (call: WeChatCall) => {
     if (voiceCall) return;
-    setVoiceCall(true);
+    setVoiceCall(call);
     try {
       // Original, generic call-progress beep; no commercial song is embedded.
       const context = new AudioContext();
@@ -375,11 +455,6 @@ export function WeChatSkin(p: SkinProps) {
         </div>
       ) : p.thread ? (
         <>
-          {p.thread === "👶🌙" && (
-            <button type="button" className="wx-voice-call-button" onClick={startVoiceCall}>
-              <Phone size={17} /> 语音通话
-            </button>
-          )}
           <MessageList
             key={p.thread}
             items={p.items.filter((i) => i.title === p.thread)}
@@ -387,14 +462,14 @@ export function WeChatSkin(p: SkinProps) {
             onItem={p.onItem}
             onRead={p.onRead}
           />
-          <Compose creator={p.creator} onAdd={p.onAdd} />
-          {voiceCall && p.thread === "👶🌙" && (
-            <div className="wx-voice-call-screen" role="dialog" aria-label="微信语音通话">
-              <div className="wx-voice-call-avatar">👶🌙</div>
-              <h2>👶🌙</h2>
-              <p>微信语音通话 · 呼叫中…</p>
-              <small>对方铃声：《爱乐之城》</small>
-              <small>目前播放原创呼叫提示音，尚未添加原曲音频</small>
+          <WeChatComposer key={p.thread} p={p} onCall={startVoiceCall} />
+          {voiceCall && (
+            <div className="wx-voice-call-screen" role="dialog" aria-label={`微信${voiceCall}`}>
+              <div className="wx-voice-call-avatar"><Avatar name={p.thread} src={p.items.find((item) => item.title === p.thread && !item.outgoing)?.avatar} /></div>
+              <h2>{p.thread}</h2>
+              <p>微信{voiceCall} · 呼叫中…</p>
+              {p.thread === "👶🌙" && <small>对方铃声：《爱乐之城》</small>}
+              <small>模拟呼叫提示音</small>
               <button type="button" className="wx-voice-hangup" onClick={stopVoiceCall}>
                 <Phone size={24} /> 挂断
               </button>

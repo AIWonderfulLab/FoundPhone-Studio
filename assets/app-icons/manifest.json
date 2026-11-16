@@ -24,6 +24,11 @@
       "file": "camera.png",
       "sha256": "7cd8b74e81ab87efc393bcdc321a724d7a031e5c4b0336480d28afd49f04446e"
     },
+    "b612": {
+      "file": "b612.jpg",
+      "sha256": "ba7846f4cf24ba13924a56fd10fcbd53e7806ee365805c2a43274cdaf8628480",
+      "source": "https://apps.apple.com/cn/app/id1125855154"
+    },
     "clock": {
       "file": "clock.png",
       "sha256": "ff07b085572bf36dc337bb504715ef661effe084ecb392d1062f3dee3a703496"

@@ -19,6 +19,7 @@ it("places B612 after NetEase and in the Camera Dock slot on new and saved layou
   old.previewLayoutRevision = 3;
   old.apps.find((app) => app.id === "camera")!.dock = true;
   const b612 = old.apps.find((app) => app.id === "b612")!;
+  b612.name = "B612相机";
   b612.dock = false;
   delete b612.homeAfter;
   old.order = ["b612", "netease"];
@@ -30,6 +31,7 @@ it("places B612 after NetEase and in the Camera Dock slot on new and saved layou
       "netease", "b612",
     ]);
     expect(dock.map((app) => app.id)).toEqual(["phone", "messages", "b612", "safari"]);
+    expect(dock.find((app) => app.id === "b612")?.name).toBe("B612咔叽");
   }
 });
 

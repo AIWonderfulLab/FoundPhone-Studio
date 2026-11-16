@@ -3,7 +3,6 @@ import { useSkinState } from "../skinState";
 import {
   Bookmark,
   Check,
-  Compass,
   Heart,
   Home,
   MessageCircle,
@@ -18,6 +17,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { safeMedia, type Item } from "../schema";
+import { NeteaseComments, NeteasePlayer } from "./NeteasePlayer";
 import {
   Avatar,
   Empty,
@@ -149,94 +149,146 @@ export function SpotifySkin(p: Props) {
   );
 }
 export function NeteaseSkin(p: Props) {
-  const { tab, setTab, q, setQ, items } = useContent(p, "发现");
+  const { tab, setTab, q, setQ, items } = useContent(p, "首页");
   const [folder, setFolder] = useState(""),
-    [track, setTrack] = useTrack(p, items);
+    [track, setTrack] = useTrack(p, p.items);
+  const [playerOpen, setPlayerOpen] = useState(false);
+  const [comments, setComments] = useState<Item | null>(null);
+  const [playing, setPlaying] = useState(false);
   const list = folder
     ? items.filter((i) => (i.folder || "我的歌单") === folder)
     : items;
+  const chooseTrack = (item: Item) => {
+    setTrack(item);
+    setPlaying(true);
+  };
+  const step = (direction: number) => {
+    if (!track || !p.items.length) return;
+    const queue = p.items;
+    const index = queue.findIndex((item) => item.id === track.id);
+    chooseTrack(queue[(index + direction + queue.length) % queue.length]);
+  };
+  const openComments = (item: Item) => {
+    p.onRead(item.id);
+    setComments(item);
+  };
+  const overlay = Boolean(comments || (track && playerOpen));
   return (
     <div className="catalog-skin netease-ui">
-      <Header p={p} />
-      <div className="catalog-scroll">
-        <SearchBox value={q} set={setQ} />
-        {tab === "发现" ? (
-          <>
-            <div className="netease-feature">
-              <Music size={44} />
-              <h2>推荐歌单</h2>
-            </div>
-            <div className="netease-shelves">
-              {groupItems(items, "我的歌单").map((g) => (
-                <button
-                  key={g}
-                  onClick={() => {
-                    setFolder(g);
-                    setTab("我的");
-                  }}
-                >
-                  <Music size={33} />
-                  <strong>{g}</strong>
-                </button>
-              ))}
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="netease-profile">
-              <Avatar name={p.owner ?? "我"} />
-              <h2>{p.owner ?? "我的音乐"}</h2>
-            </div>
-            <h3>{folder || "我的歌单"}</h3>
-          </>
-        )}
-        {list.map((i, n) => (
-          <div className="netease-track" key={i.id}>
-            <button
-              onClick={() => {
-                setTrack(i);
-              }}
-            >
-              <span>{n + 1}</span>
-              <div>
-                <strong>{i.title}</strong>
-                <small>
-                  {i.sender} · {meta(i, "album")}
-                </small>
+      <div className="netease-library" inert={overlay}>
+        <Header p={p} />
+        <div className="catalog-scroll">
+          <SearchBox value={q} set={setQ} />
+          {tab === "首页" ? (
+            <>
+              <div className="netease-feature">
+                <Music size={44} />
+                <h2>推荐歌单</h2>
               </div>
-            </button>
-            <button
-              aria-label={`歌曲详情${i.title}`}
-              onClick={() => p.onItem(i)}
+              <div className="netease-shelves">
+                {groupItems(items, "我的歌单").map((g) => (
+                  <button
+                    key={g}
+                    onClick={() => {
+                      setFolder(g);
+                      setTab("我的");
+                    }}
+                  >
+                    <Music size={33} />
+                    <strong>{g}</strong>
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="netease-profile">
+                <Avatar name={p.owner ?? "我"} />
+                <h2>{p.owner ?? "我的音乐"}</h2>
+              </div>
+              <h3>{folder || "我的歌单"}</h3>
+            </>
+          )}
+          {list.map((i, n) => (
+            <div
+              className={`netease-track${track?.id === i.id ? " selected" : ""}`}
+              key={i.id}
             >
-              <MessageCircle size={18} />
+              <button
+                aria-pressed={track?.id === i.id}
+                onClick={() => chooseTrack(i)}
+              >
+                <span>{n + 1}</span>
+                <div>
+                  <strong>{i.title}</strong>
+                  <small>{i.sender || meta(i, "artist", "未知歌手")}</small>
+                </div>
+              </button>
+              <button
+                aria-label={`${i.title}的评论`}
+                onClick={() => openComments(i)}
+              >
+                <MessageCircle size={18} />
+              </button>
+            </div>
+          ))}
+          <Empty items={list} />
+        </div>
+        {track && (
+          <div className="track-player">
+            <button
+              aria-label={`正在播放 ${track.title}`}
+              onClick={() => setPlayerOpen(true)}
+            >
+              <Music size={20} />
+              <span>
+                {track.title}
+                <small>{track.sender}</small>
+              </span>
+            </button>
+            <button aria-label="下一首" onClick={() => step(1)}>
+              <SkipForward size={19} />
             </button>
           </div>
-        ))}
-        <Empty items={list} />
+        )}
+        <Tabs
+          tabs={["首页", "我的"]}
+          value={tab}
+          set={(t) => {
+            setTab(t);
+            setFolder("");
+          }}
+          icons={[<Home />, <Music />]}
+        />
       </div>
       {track && (
-        <TrackPlayer
-          item={track}
+        <div
+          className="netease-player-layer"
+          hidden={!playerOpen}
+          inert={Boolean(comments)}
+        >
+          <NeteasePlayer
+            key={track.id}
+            p={p}
+            item={track}
+            opened={playerOpen}
+            playing={playing}
+            setPlaying={setPlaying}
+            step={step}
+            chooseTrack={chooseTrack}
+            close={() => setPlayerOpen(false)}
+            openComments={() => openComments(track)}
+          />
+        </div>
+      )}
+      {comments && (
+        <NeteaseComments
+          key={comments.id}
           p={p}
-          onNext={() =>
-            setTrack(
-              items[
-                (items.findIndex((i) => i.id === track.id) + 1) % items.length
-              ],
-            )
-          }
+          item={comments}
+          close={() => setComments(null)}
         />
       )}
-      <Tabs
-        tabs={["发现", "我的"]}
-        value={tab}
-        set={(t) => {
-          setTab(t);
-          setFolder("");
-        }}
-        icons={[<Compass />, <Music />]}
-      />
     </div>
   );
 }

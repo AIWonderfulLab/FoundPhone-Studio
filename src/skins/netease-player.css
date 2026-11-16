@@ -1,0 +1,452 @@
+.netease-ui {
+  position: relative;
+}
+.netease-library {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+.netease-ui .netease-track.selected {
+  background: #e8e8ea;
+}
+.netease-ui .netease-track.selected > button {
+  background: transparent;
+}
+.netease-ui .netease-track small {
+  color: #666;
+  font-size: 11px;
+}
+.netease-ui .netease-track > button:last-child {
+  min-width: 32px;
+  min-height: 36px;
+}
+.dark-phone .netease-ui .netease-track.selected {
+  background: #353538;
+}
+.dark-phone .netease-ui .netease-track small {
+  color: #b4b4b7;
+}
+
+.netease-player-layer,
+.netease-comments {
+  position: absolute;
+  inset: 0;
+}
+.netease-playing {
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(#536d67, #2a3835);
+  color: #dbe9e6;
+}
+.phone-shell
+  .phone-screen:has(.netease-player-layer:not([hidden])):not(
+    :has(.netease-comments)
+  )
+  .status-bar {
+  background: #536d67;
+  color: white;
+}
+.app-screen:has(.netease-player-layer:not([hidden])):not(
+    :has(.netease-comments)
+  ) {
+  background: #2a3835;
+}
+.ios18
+  .in-app:has(.netease-player-layer:not([hidden])):not(:has(.netease-comments))
+  .home-indicator::after {
+  background: #dbe9e6;
+}
+.netease-overlay-header {
+  position: relative;
+  min-height: 48px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  font-size: 16px;
+}
+.netease-overlay-header > button {
+  position: absolute;
+  inset: 0 auto 0 8px;
+  width: 44px;
+  color: inherit;
+}
+.netease-turntable {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  container-type: size;
+}
+.netease-turntable-disc {
+  width: min(78cqw, 83cqh);
+  aspect-ratio: 1;
+  margin-top: 5%;
+}
+.netease-record {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background:
+    repeating-radial-gradient(circle, transparent 0 2px, #ffffff09 3px 4px),
+    conic-gradient(from 65deg, #0c0d0e, #292929, #111213, #242424, #0c0d0e);
+  box-shadow:
+    0 0 0 1px #151617,
+    0 0 0 8px #ffffff0c,
+    0 5px 18px #15211d80;
+}
+.netease-turntable-disc .netease-record {
+  animation: netease-spin 24s linear infinite;
+  animation-play-state: paused;
+}
+.netease-turntable-disc[data-playing="true"] .netease-record {
+  animation-play-state: running;
+}
+@keyframes netease-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .netease-turntable-disc .netease-record {
+    animation: none;
+  }
+}
+.netease-record-art {
+  width: 69%;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 12%;
+  overflow: hidden;
+  border-radius: 50%;
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 30% 29%, #fff3ba 0 12%, transparent 13%),
+    repeating-linear-gradient(143deg, #307e7820 0 6px, transparent 7px 15px),
+    linear-gradient(140deg, #e8e5a8, #80c0a5 64%, #3d8479);
+  color: #163b37;
+  text-align: center;
+}
+.netease-record-art[data-color="1"] {
+  filter: hue-rotate(43deg);
+}
+.netease-record-art[data-color="2"] {
+  filter: hue-rotate(310deg);
+}
+.netease-record-art[data-color="3"] {
+  filter: hue-rotate(190deg);
+}
+.netease-record-art img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.netease-record-art b {
+  font-size: clamp(10px, 5cqw, 21px);
+  line-height: 1.14;
+}
+.netease-record-art small {
+  font-size: 11px;
+}
+.netease-tonearm {
+  position: absolute;
+  top: 6%;
+  left: 50%;
+  width: 24%;
+  height: 33%;
+  border: solid #f3f8f7;
+  border-width: 0 0 5px 6px;
+  border-radius: 0 0 5px 72%;
+  transform: rotate(-16deg);
+  transform-origin: 0 0;
+  filter: drop-shadow(0 2px 2px #263d37aa);
+  pointer-events: none;
+}
+.netease-tonearm::before,
+.netease-tonearm i {
+  content: "";
+  position: absolute;
+  background: #f3f8f7;
+}
+.netease-tonearm::before {
+  width: 16px;
+  height: 16px;
+  top: -8px;
+  left: -11px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 6px #354d4860;
+}
+.netease-tonearm i {
+  width: 22px;
+  height: 12px;
+  bottom: -8px;
+  right: -8px;
+  border-radius: 3px;
+}
+.netease-playing-info {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px 54px;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px 6px;
+}
+.netease-playing-info h2 {
+  font-size: 17px;
+  margin: 0 0 5px;
+}
+.netease-playing-info h2,
+.netease-playing-info p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.netease-playing-info p {
+  color: #a9bfba;
+  margin: 0;
+  font-size: 13px;
+}
+.netease-playing-info button {
+  min-height: 42px;
+  color: inherit;
+}
+.netease-playing-info [aria-pressed="true"] {
+  color: #ff4855;
+}
+.netease-comment-link {
+  position: relative;
+}
+.netease-comment-link sup {
+  position: absolute;
+  top: 4px;
+  right: 0;
+  font-size: 9px;
+  background: #364b45;
+  padding: 0 2px;
+}
+.netease-progress {
+  padding: 6px 23px 0;
+}
+.netease-progress input {
+  padding: 0;
+  margin: 0;
+  height: 20px;
+  accent-color: #b9d1cc;
+}
+.netease-progress > div {
+  display: flex;
+  justify-content: space-between;
+  color: #a9bfba;
+  font-size: 10px;
+}
+.netease-recording-credit {
+  margin: 0;
+  padding: 0 18px 12px;
+  text-align: center;
+  font-size: 10px;
+  color: #bdd0cb;
+}
+.netease-official-source {
+  display: grid;
+  gap: 7px;
+  padding: 0 18px;
+  text-align: center;
+  flex: none;
+}
+.netease-official-source iframe {
+  width: 100%;
+  height: 150px;
+  border: 0;
+  border-radius: 12px;
+  background: #f4f4f6;
+}
+.netease-official-source a {
+  justify-self: center;
+  padding: 5px;
+  color: #dbe9e6;
+  text-decoration: underline;
+}
+.netease-transport {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 18px 21px;
+  min-height: 69px;
+}
+.netease-transport button {
+  width: 44px;
+  height: 44px;
+  color: inherit;
+}
+.netease-transport [aria-pressed="true"] {
+  color: #c1f2e1;
+}
+.netease-queue {
+  position: absolute;
+  inset: auto 0 0;
+  max-height: 52%;
+  overflow: auto;
+  border-radius: 18px 18px 0 0;
+  padding: 10px 16px;
+  background: #f8f8fa;
+  color: #222;
+  box-shadow: 0 -12px 28px #17211d77;
+}
+.netease-queue header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.netease-queue > button {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+.netease-queue [aria-current="true"] {
+  color: #cf2635;
+}
+
+.netease-comments {
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  color: #22242a;
+}
+.netease-comments .netease-overlay-header strong::after {
+  content: "";
+  display: block;
+  width: 16px;
+  height: 3px;
+  margin: 4px auto 0;
+  border-radius: 5px;
+  background: #fd424d;
+}
+.netease-comment-song {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 62px;
+  padding: 7px 15px 10px;
+  border-bottom: 6px solid #f3f3f5;
+  font-size: 13px;
+}
+.netease-comment-song .netease-record {
+  width: 39px;
+  height: 39px;
+  flex: none;
+  box-shadow: none;
+}
+.netease-comment-song .netease-record-art {
+  padding: 2px;
+}
+.netease-comment-song .netease-record-art svg {
+  width: 12px;
+}
+.netease-comment-song .netease-record-art b,
+.netease-comment-song .netease-record-art small {
+  display: none;
+}
+.netease-comment-song small {
+  color: #666;
+}
+.netease-comment-filters {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 15px 4px;
+  font-size: 13px;
+}
+.netease-comment-filters button {
+  min-height: 33px;
+  color: #777;
+  padding: 0 6px;
+}
+.netease-comment-filters [aria-pressed="true"] {
+  color: #24242a;
+  font-weight: 700;
+}
+.netease-comment-scroll {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.netease-comment {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 10px;
+  padding: 12px 15px;
+}
+.netease-comment .catalog-avatar {
+  width: 33px;
+  height: 33px;
+  background: #729987;
+}
+.netease-comment:nth-child(even) .catalog-avatar {
+  background: #947d9a;
+}
+.netease-comment header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 6px;
+}
+.netease-comment header strong {
+  display: block;
+  font-size: 13px;
+}
+.netease-comment header small,
+.netease-comment header button {
+  color: #777;
+  font-size: 10px;
+}
+.netease-comment header button[aria-pressed="true"] {
+  color: #cf2635;
+}
+.netease-comment p {
+  margin: 8px 0 4px;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.netease-comment .netease-replies {
+  padding: 2px 0;
+  color: #456e8b;
+}
+.netease-comment .netease-reply {
+  padding: 6px 8px;
+  border-radius: 5px;
+  background: #f2f4f6;
+  font-size: 12px;
+}
+.netease-comment-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 15px;
+  border-top: 1px solid #eee;
+}
+.netease-comment-form input {
+  min-width: 0;
+  border: 0;
+  border-radius: 18px;
+  background: #f0f0f2;
+  padding: 9px 13px;
+}
+.netease-comment-form button {
+  flex: none;
+  color: #c52734;
+}

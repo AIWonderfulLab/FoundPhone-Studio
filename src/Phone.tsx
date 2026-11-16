@@ -998,6 +998,11 @@ function AppContent({
               onUi={creator ? undefined : onUi}
               name={name}
               items={shown}
+              albumPhotos={app.id === "wechat"
+                ? [...(work.data.photos ?? []), ...(state.messages.photos ?? [])].filter(
+                    (item) => item.kind === "image" && !item.password && (creator || visible(item, state)),
+                  )
+                : undefined}
               creator={creator}
               onRead={onRead}
               onItem={read}

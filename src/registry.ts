@@ -64,7 +64,7 @@ const definitions: [
   ["contacts", "通讯录", "records", "#818c98", Users, ["所有联系人", "分组"]],
   ["photos", "相册", "media", "#d18769", Image, ["图库", "相簿", "收藏"]],
   ["camera", "相机", "media", "#777d85", Camera, ["照片", "视频"]],
-  ["b612", "B612相机", "media", "#f1a4bf", Camera, ["照片", "视频"]],
+  ["b612", "B612咔叽", "media", "#f1a4bf", Camera, ["照片", "视频"]],
   ["safari", "浏览器", "document", "#299bd5", Globe, ["书签", "历史记录"]],
   ["notes", "备忘录", "document", "#e8b53e", StickyNote, ["备忘录", "文件夹"]],
   ["calendar", "日历", "records", "#e96360", Calendar, ["日程", "日历"]],

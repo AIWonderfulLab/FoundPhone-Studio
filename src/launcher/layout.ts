@@ -158,9 +158,13 @@ export function validateLayout(raw: unknown, input: Work) {
     layout.order = layout.order.filter((id) => !deleted.has(id) && !hidden.has(id));
     layout.previewLayoutRevision = 3;
   }
-  const authoredB612 = w.apps.find((app) => app.id === "b612" && app.homeAfter);
-  if (w.id === "ui-test-phone-v2" && authoredB612 && layout.previewLayoutRevision < 4) {
-    const b612 = layout.apps.find((app) => app.id === "b612")!;
+  const authoredB612 = w.apps.find((app) => app.id === "b612");
+  const savedB612 = layout.apps.find((app) => app.id === "b612");
+  if (savedB612?.name === "B612相机" && authoredB612?.name === "B612咔叽") {
+    savedB612.name = authoredB612.name;
+  }
+  if (w.id === "ui-test-phone-v2" && authoredB612?.homeAfter && savedB612 && layout.previewLayoutRevision < 4) {
+    const b612 = savedB612;
     const camera = layout.apps.find((app) => app.id === "camera");
     if (camera?.dock) {
       camera.dock = false;

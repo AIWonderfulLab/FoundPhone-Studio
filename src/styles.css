@@ -4953,17 +4953,82 @@ label {
   flex: 0 0 auto;
   margin: 0;
 }
-.wechat-ui .wx-voice-call-button {
-  display: flex;
+.ios18 .wechat-ui .skin-compose > .wx-compose-more {
+  flex: none;
+  width: 33px;
+  height: 35px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
   justify-content: center;
-  align-items: center;
+}
+.wechat-ui :is(.wx-actions, .wx-action-sheet) {
+  flex: none;
+  background: #f4f4f4;
+  border-top: 1px solid #dedede;
+  color: #484848;
+}
+.wechat-ui .wx-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px 4px;
+  padding: 14px 12px 22px;
+}
+.wx-actions > button {
+  flex-direction: column;
   gap: 7px;
-  width: 100%;
-  padding: 10px;
+  padding: 0;
+  color: inherit;
+  font-size: 11px;
+}
+.wx-actions > button > span {
+  display: grid;
+  place-items: center;
+  width: min(60px, 90%);
+  aspect-ratio: 1;
+  border-radius: 17px;
   background: #fff;
-  color: #07a657;
-  font-size: 13px;
-  border-bottom: 1px solid #ececec;
+  color: #454545;
+}
+.wechat-ui .wx-action-sheet {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 8px 14px 18px;
+  gap: 5px;
+  text-align: center;
+  max-height: 38%;
+  overflow-y: auto;
+}
+.wx-action-sheet > button {
+  flex: none;
+  min-height: 42px;
+  border-radius: 8px;
+  background: #fff;
+  color: #222;
+}
+.wx-action-sheet > img {
+  align-self: center;
+  height: 125px;
+  max-width: 100%;
+  object-fit: contain;
+}
+.wx-action-photos {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+}
+.wx-action-photos button { padding: 0; }
+.wx-action-photos img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+.dark-phone .wechat-ui :is(.wx-actions, .wx-action-sheet) {
+  background: #252525;
+  border-color: #333;
+  color: #ddd;
+}
+.dark-phone :is(.wx-actions > button > span, .wx-action-sheet > button) {
+  background: #343434;
+  color: #eee;
 }
 .wechat-ui .wx-voice-call-screen {
   position: absolute;
@@ -4991,6 +5056,12 @@ label {
   border-radius: 20px;
   font-size: 30px;
   background: #76878a;
+}
+.wx-voice-call-avatar .skin-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  font-size: 30px;
 }
 .wx-voice-call-screen h2 {
   margin: 20px 0 10px;

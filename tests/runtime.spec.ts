@@ -16,6 +16,141 @@ import { test, expect, type Page } from "@playwright/test";
 test.describe("mobile player", () => {
   test.use({ viewport: { width: 375, height: 667 }, isMobile: true, hasTouch: true });
 
+  async function openTemplate(page: Page) {
+    await page.unroute("**/work.json");
+    await page.route("**/work.json", async (route) => {
+      const response = await route.fetch();
+      const story = await response.json();
+      story.phone.passcode = "";
+      await route.fulfill({ response, json: story });
+    });
+    await page.goto("/");
+    await page.getByRole("button", { name: "轻触解锁" }).tap();
+  }
+
+  test("B612 uses the App Store icon on the home screen and Dock", async ({ page }) => {
+    await openTemplate(page);
+    const shortcuts = page.getByRole("button", { name: "打开B612咔叽", exact: true });
+    await expect(shortcuts).toHaveCount(2);
+    for (const shortcut of await shortcuts.all()) {
+      const icon = shortcut.locator('[data-original-icon="b612"] img');
+      await expect(icon).toHaveAttribute("src", /icon-assets\/b612\.jpg$/);
+      await expect.poll(() => icon.evaluate((el) => (el as HTMLImageElement).naturalWidth)).toBe(512);
+    }
+    await page.locator(".dock").getByRole("button", { name: "打开B612咔叽", exact: true }).tap();
+    await expect(page.locator(".skin-b612")).toBeVisible();
+  });
+
+  test("WeChat inserts the breakfast photo and starts a call from the composer", async ({ page }) => {
+    await openTemplate(page);
+    await page.getByRole("button", { name: "打开微信", exact: true }).tap();
+    await page.locator(".wx-chat-row").filter({ hasText: "👶🌙" }).first().tap();
+    const thread = page.locator(".wechat-ui");
+    const photo = thread.getByRole("img", { name: /酒店桌上的早餐/ });
+    await photo.scrollIntoViewIfNeeded();
+    await expect(photo).toBeVisible();
+    await expect.poll(() => photo.evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+    const messages = await thread.locator(".skin-messages > :is(.skin-date, .skin-message)").evaluateAll((nodes) =>
+      nodes.map((node) => node.querySelector('img[alt*="酒店桌上的早餐"]')
+        ? "早餐照"
+        : (node.querySelector(".skin-bubble") ?? node).textContent?.trim()),
+    );
+    const breakfast = messages.indexOf("早餐照");
+    expect(messages.slice(breakfast - 3, breakfast + 3)).toEqual([
+      "08:30", "我起来了", "08:35", "早餐照", "08:45", "我都吃光光了😊",
+    ]);
+    const rain = thread.getByRole("img", { name: /小雨中的高架桥/ });
+    await rain.scrollIntoViewIfNeeded();
+    await expect.poll(() => rain.evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+    await expect(rain.locator("xpath=ancestor::div[contains(@class, 'skin-message')][1]/following-sibling::div[contains(@class, 'skin-message')][1]"))
+      .toContainText("知道啦 广州现在下小雨呢");
+
+    await expect(thread.getByRole("button", { name: "语音通话", exact: true })).toHaveCount(0);
+    await thread.getByRole("button", { name: "更多聊天功能" }).tap();
+    const actions = thread.getByRole("region", { name: "聊天功能" });
+    await expect(actions.getByRole("button")).toHaveText([
+      "照片", "拍摄", "视频通话", "位置", "红包", "礼物", "转账", "问小微",
+    ]);
+    await actions.getByRole("button", { name: "照片", exact: true }).tap();
+    const album = thread.getByRole("region", { name: "照片", exact: true });
+    await expect(album.getByRole("img", { name: /酒店桌上的早餐/ })).toHaveCount(0);
+    await album.getByRole("button", { name: "合照 01", exact: true }).tap();
+    await expect(album.locator(":scope > img")).toHaveAttribute("alt", "合照 01");
+    await album.getByRole("button", { name: "返回相册" }).tap();
+    await album.getByRole("button", { name: "返回功能菜单" }).tap();
+    await actions.getByRole("button", { name: "视频通话" }).tap();
+    await thread.getByRole("button", { name: "语音通话", exact: true }).tap();
+    const call = thread.getByRole("dialog", { name: "微信语音通话" });
+    await expect(call).toBeVisible();
+    await call.getByRole("button", { name: "挂断" }).tap();
+    await expect(call).toHaveCount(0);
+  });
+
+  test("NetEase shows artist credits, whole-row selection and per-track comments", async ({ page }) => {
+    await page.route("https://embed.music.apple.com/**", (route) => route.fulfill({ contentType: "text/html", body: "<p>Apple Music</p>" }));
+    await openTemplate(page);
+    await page.getByRole("button", { name: "打开网易云音乐", exact: true }).tap();
+    await expect(page.getByRole("button", { name: "首页", exact: true })).toBeVisible();
+
+    const row = page.locator(".netease-track").filter({ hasText: "慢慢喜欢你" });
+    await expect(row.getByText("莫文蔚", { exact: true })).toBeVisible();
+    await row.getByRole("button", { name: /慢慢喜欢你.*莫文蔚/ }).tap();
+    await expect(row).toHaveCSS("background-color", "rgb(232, 232, 234)");
+    await expect(row.getByRole("button", { name: "慢慢喜欢你的评论" }))
+      .toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+
+    await page.getByRole("button", { name: "正在播放 慢慢喜欢你" }).tap();
+    const player = page.getByRole("region", { name: "正在播放" });
+    await expect(player.getByRole("heading", { name: "慢慢喜欢你" })).toBeVisible();
+    await expect(player.getByTitle("Apple Music 官方试听：慢慢喜欢你")).toHaveAttribute(
+      "src", "https://embed.music.apple.com/cn/album/1869049124?i=1869049128",
+    );
+    const commentsLink = player.getByRole("button", { name: /打开评论/ });
+    const count = (await commentsLink.getAttribute("aria-label"))!.match(/\d+/)![0];
+    await commentsLink.tap();
+    const comments = page.getByRole("region", { name: "歌曲评论" });
+    await expect(comments.getByText(`评论 (${count})`, { exact: true })).toBeVisible();
+    await comments.getByRole("button", { name: "最热" }).tap();
+    await expect(comments.getByRole("button", { name: "最热" })).toHaveAttribute("aria-pressed", "true");
+    await comments.getByRole("textbox", { name: "写评论" }).fill("这首值得单曲循环");
+    await comments.getByRole("button", { name: "发送" }).tap();
+    await expect(comments.getByText("这首值得单曲循环")).toBeVisible();
+    await comments.getByRole("button", { name: "返回" }).tap();
+    await expect(player).toBeVisible();
+    await player.getByRole("button", { name: "下一首" }).tap();
+    await expect(player.getByRole("heading", { name: "爱你", exact: true })).toBeVisible();
+    await player.getByRole("button", { name: "上一首" }).tap();
+    await player.getByRole("button", { name: /打开评论/ }).tap();
+    await expect(comments.getByText("这首值得单曲循环")).toBeVisible();
+  });
+
+  test("NetEase preserves the linked recordings and stops the embed on close", async ({ page }) => {
+    await page.route("https://embed.music.apple.com/**", (route) => route.fulfill({ contentType: "text/html", body: "<p>Apple Music</p>" }));
+    await openTemplate(page);
+    await page.getByRole("button", { name: "打开网易云音乐", exact: true }).tap();
+    await page.getByRole("button", { name: /那些花儿.*范玮琪/ }).tap();
+    await page.getByRole("button", { name: "正在播放 那些花儿" }).tap();
+    const player = page.getByRole("region", { name: "正在播放" });
+    await expect(player.getByTitle("Apple Music 官方试听：那些花儿")).toHaveAttribute(
+      "src", "https://embed.music.apple.com/cn/album/536098121?i=536098124",
+    );
+    await player.getByRole("button", { name: "下一首" }).tap();
+    await player.getByRole("button", { name: "下一首" }).tap();
+    await expect(player.getByRole("link", { name: "前往 Apple Music 播放" })).toHaveAttribute(
+      "href", "https://music.apple.com/tw/album/1724720279?i=1724720282",
+    );
+    await expect(player.locator("iframe")).toHaveCount(0);
+    await player.getByRole("button", { name: "播放列表" }).tap();
+    await player.getByRole("button", { name: /淡季.*音乐合伙人/ }).tap();
+    await expect(player.getByRole("link", { name: "前往 网易云音乐 播放" })).toHaveAttribute(
+      "href", "https://music.163.com/song?id=3372978254",
+    );
+    await player.getByRole("button", { name: "下一首" }).tap();
+    await expect(player.locator("iframe")).toHaveCount(1);
+    await player.getByRole("button", { name: "收起播放页" }).tap();
+    await expect(page.locator(".netease-playing iframe")).toHaveCount(0);
+  });
+
   test("keeps fifth-row app names above the desktop controls", async ({ page }) => {
     await page.goto("/?preview=test");
     await page.getByRole("button", { name: "轻触解锁" }).tap();

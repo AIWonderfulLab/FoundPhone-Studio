@@ -6,6 +6,7 @@ export const originalIconFiles: Record<string, string> = {
   contacts: "contacts.png",
   calendar: "calendar.png",
   camera: "camera.png",
+  b612: "b612.jpg",
   clock: "clock.png",
   notes: "notes.png",
   files: "files.png",

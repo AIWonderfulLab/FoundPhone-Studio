@@ -41,6 +41,32 @@ test.describe("mobile player", () => {
     await expect(page.locator(".skin-b612")).toBeVisible();
   });
 
+  test("WeChat prepends the July conversation and reveals its recalled message", async ({ page }) => {
+    await openTemplate(page);
+    await page.getByRole("button", { name: "打开微信", exact: true }).tap();
+    await page.locator(".wx-chat-row").filter({ hasText: "👶🌙" }).first().tap();
+    const thread = page.locator(".wechat-ui");
+    const messages = thread.locator(".skin-messages");
+    await expect(messages.locator(".skin-bubble").first()).toHaveText("在吗");
+    await expect(messages.locator(".skin-date").first()).toHaveText("7月23日 21:03");
+    const recalled = messages.locator(".wx-recalled-message");
+    await expect(recalled).toContainText("你撤回了一条消息");
+    await expect(recalled).not.toContainText("你妹妹不是在外地吗");
+    await recalled.getByRole("button", { name: "查看撤回" }).tap();
+    await expect(recalled).toContainText("你妹妹不是在外地吗");
+    await expect(recalled.getByRole("button")).toHaveCount(0);
+    const ticket = messages.getByRole("img", { name: /陈瑶北京飞长沙的机票/ });
+    await ticket.tap();
+    const viewer = page.getByRole("dialog", { name: "查看图片" });
+    await expect(viewer.getByRole("img", { name: /陈瑶北京飞长沙的机票/ })).toBeVisible();
+    await viewer.getByRole("button", { name: "关闭图片" }).tap();
+    await page.reload();
+    await page.getByRole("button", { name: "轻触解锁" }).tap();
+    await page.getByRole("button", { name: "打开微信", exact: true }).tap();
+    await page.locator(".wx-chat-row").filter({ hasText: "👶🌙" }).first().tap();
+    await expect(page.locator(".skin-messages .skin-bubble").first()).toHaveText("在吗");
+  });
+
   test("WeChat inserts the breakfast photo and starts a call from the composer", async ({ page }) => {
     await openTemplate(page);
     await page.getByRole("button", { name: "打开微信", exact: true }).tap();

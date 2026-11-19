@@ -5034,6 +5034,25 @@ label {
   cursor: zoom-in;
   touch-action: manipulation;
 }
+.wx-recalled-message {
+  align-self: center;
+  max-width: 90%;
+  color: #888;
+  font-size: 12px;
+  line-height: 1.7;
+  text-align: center;
+}
+.wx-recalled-message button {
+  padding: 4px 6px;
+  border: 0;
+  background: transparent;
+  color: #576b95;
+  font: inherit;
+}
+.wx-recalled-message p {
+  margin: 5px 0;
+  color: #555;
+}
 .wx-image-viewer {
   position: absolute;
   inset: 0;

@@ -130,6 +130,7 @@ function MessageList({
   whatsapp?: boolean;
 }) {
   const messagesRef = useRef<HTMLDivElement>(null);
+  const [revealedMessages, setRevealedMessages] = useState<Set<string>>(() => new Set());
   const lastMessageId = items[items.length - 1]?.id;
   useLayoutEffect(() => {
     const messages = messagesRef.current;
@@ -159,7 +160,19 @@ function MessageList({
                 {messageTimeLabel(i.time, changedDate)}
               </div>
             )}
-            <div className={`skin-message ${i.outgoing ? "outgoing" : ""}`}>
+            {!whatsapp && i.meta.recalled === "true" ? (
+              <div className="wx-recalled-message">
+                <span>{i.outgoing ? "你撤回了一条消息" : `${i.sender}撤回了一条消息`}</span>
+                {revealedMessages.has(i.id) ? (
+                  <p>{i.body}</p>
+                ) : (
+                  <button type="button" onClick={() => {
+                    onRead(i.id);
+                    setRevealedMessages((previous) => new Set([...previous, i.id]));
+                  }}>查看撤回</button>
+                )}
+              </div>
+            ) : <div className={`skin-message ${i.outgoing ? "outgoing" : ""}`}>
               {!whatsapp && !i.outgoing && (
                 <Avatar name={i.sender} src={i.avatar} />
               )}
@@ -196,7 +209,7 @@ function MessageList({
               {!whatsapp && i.outgoing && (
                 <Avatar name={i.sender} src={i.avatar} />
               )}
-            </div>
+            </div>}
           </Fragment>
         );
       })}

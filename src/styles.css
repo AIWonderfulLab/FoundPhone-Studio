@@ -3771,7 +3771,7 @@ label {
 .system-panel .control-grid button {
   color: #fff;
 }
-.phone-screen .skin-bubble:hover {
+.phone-screen button.skin-bubble:hover {
   background-color: initial;
 }
 .app-screen:has(.independent-skin) {
@@ -3994,6 +3994,9 @@ label {
   text-align: left;
   overflow-wrap: anywhere;
   position: relative;
+}
+.wx-text-bubble {
+  user-select: text;
 }
 .skin-bubble > small {
   display: flex;

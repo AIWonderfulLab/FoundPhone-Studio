@@ -176,36 +176,40 @@ function MessageList({
               {!whatsapp && !i.outgoing && (
                 <Avatar name={i.sender} src={i.avatar} />
               )}
-              <button
-                type="button"
-                className="skin-bubble"
-                aria-haspopup={canPreview ? "dialog" : undefined}
-                onClick={(event) => {
-                  if (creator) {
-                    onItem(i);
-                    return;
-                  }
-                  onRead(i.id);
-                  if (canPreview) onPreview(i, event.currentTarget);
-                }}
-              >
-                {["image", "audio", "video"].includes(i.kind) ? (
-                  <ItemMedia item={i} eager={Boolean(canPreview)} />
-                ) : i.kind === "transfer" ? (
-                  <div className="skin-transfer">
-                    ¥ {i.body}
-                    <small>转账记录 · 虚构</small>
-                  </div>
-                ) : (
-                  i.body
-                )}
-                {whatsapp && (
-                  <small>
-                    {i.time.slice(-5)}{" "}
-                    {i.outgoing && <CheckCheck size={11} />}
-                  </small>
-                )}
-              </button>
+              {!creator && !whatsapp && i.kind === "text" ? (
+                <div className="skin-bubble wx-text-bubble">{i.body}</div>
+              ) : (
+                <button
+                  type="button"
+                  className="skin-bubble"
+                  aria-haspopup={canPreview ? "dialog" : undefined}
+                  onClick={(event) => {
+                    if (creator) {
+                      onItem(i);
+                      return;
+                    }
+                    onRead(i.id);
+                    if (canPreview) onPreview(i, event.currentTarget);
+                  }}
+                >
+                  {["image", "audio", "video"].includes(i.kind) ? (
+                    <ItemMedia item={i} eager={Boolean(canPreview)} />
+                  ) : i.kind === "transfer" ? (
+                    <div className="skin-transfer">
+                      ¥ {i.body}
+                      <small>转账记录 · 虚构</small>
+                    </div>
+                  ) : (
+                    i.body
+                  )}
+                  {whatsapp && (
+                    <small>
+                      {i.time.slice(-5)}{" "}
+                      {i.outgoing && <CheckCheck size={11} />}
+                    </small>
+                  )}
+                </button>
+              )}
               {!whatsapp && i.outgoing && (
                 <Avatar name={i.sender} src={i.avatar} />
               )}

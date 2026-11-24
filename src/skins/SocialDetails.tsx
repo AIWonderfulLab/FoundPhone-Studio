@@ -71,7 +71,7 @@ export function SocialDetail(p: {
     <div className="post-detail-actions">
       <button aria-label="查看评论" onClick={() => setTab("评论")}>
         <MessageCircle />
-        {count(comments.length)}
+        {(weibo && meta(item, "commentCount")) || count(comments.length)}
       </button>
       <button aria-label="查看转发" onClick={() => setTab("转发")}>
         <Repeat2 />
@@ -184,7 +184,7 @@ export function SocialDetail(p: {
               >
                 {name}{" "}
                 {name === "评论"
-                  ? count(comments.length)
+                  ? (weibo && meta(item, "commentCount")) || count(comments.length)
                   : name === "赞"
                     ? count(item.likes + (liked ? 1 : 0))
                     : meta(item, "reposts", "0")}

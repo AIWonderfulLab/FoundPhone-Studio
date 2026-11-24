@@ -55,11 +55,12 @@ export function ensureAppStore(work: Work): Work {
 export function defaultLayout(input: Work): DeviceLayout {
   const w = ensureAppStore(input);
   const hasB612Shortcut = w.apps.some((a) => a.id === "b612" && a.homeAfter);
+  const showsWeibo = w.apps.some((app) => app.id === "weibo" && app.installed && app.visible);
   return {
     version: 1,
     workId: w.id,
     previewLayoutRevision:
-      w.id === "ui-test-phone-v2" ? (hasB612Shortcut ? 4 : 1) : 0,
+      w.id === "ui-test-phone-v2" ? (hasB612Shortcut ? (showsWeibo ? 5 : 4) : 1) : 0,
     apps: structuredClone(w.apps)
       .sort((a, b) => (a.id === "appstore" ? -1 : b.id === "appstore" ? 1 : 0))
       .map((a) =>
@@ -182,6 +183,19 @@ export function validateLayout(raw: unknown, input: Work) {
     delete layout.positions.b612;
     layout.order = layout.order.filter((id) => id !== "b612");
     layout.previewLayoutRevision = 4;
+  }
+  const authoredWeibo = w.apps.find((app) => app.id === "weibo");
+  if (
+    w.id === "ui-test-phone-v2" && authoredB612?.homeAfter &&
+    layout.previewLayoutRevision < 5 && authoredWeibo?.installed && authoredWeibo.visible
+  ) {
+    const weibo = layout.apps.find((app) => app.id === "weibo")!;
+    weibo.installed = true;
+    weibo.visible = true;
+    weibo.dock = false;
+    weibo.folder = "";
+    delete layout.positions.weibo;
+    layout.previewLayoutRevision = 5;
   }
   const entries = homeEntries(layout),
     packed = packHome(entries, layout.positions);

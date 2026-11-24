@@ -75,7 +75,7 @@ function WeiboActions({ p, item }: { p: Props; item: Item }) {
       </button>
       <button aria-label={`评论${item.title}`} onClick={() => p.onItem(item)}>
         <MessageCircle size={17} />
-        {item.comments.length || "评论"}
+        {meta(item, "commentCount") || item.comments.length || "评论"}
       </button>
       <button
         aria-label={`喜欢${item.title}`}
@@ -83,7 +83,9 @@ function WeiboActions({ p, item }: { p: Props; item: Item }) {
         onClick={() => setLiked(!liked)}
       >
         <ThumbsUp size={17} fill={liked ? "currentColor" : "none"} />
-        {item.likes + (liked ? 1 : 0) || "赞"}
+        {item.likes >= 10000
+          ? `${((item.likes + Number(liked)) / 10000).toFixed(1)}万`
+          : item.likes + Number(liked) || "赞"}
       </button>
     </div>
   );

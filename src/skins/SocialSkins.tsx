@@ -173,11 +173,9 @@ function WeiboImages({ item }: { item: Item }) {
         className="weibo-image-viewer"
         aria-label="微博大图"
         onClose={() => setActiveImage(null)}
-        onClick={(event) => {
-          if (event.target === event.currentTarget) dialog.current?.close();
-        }}
+        onClick={() => dialog.current?.close()}
+        tabIndex={-1}
       >
-        <button type="button" aria-label="关闭大图" onClick={() => dialog.current?.close()}>×</button>
         {activeImage !== null && <img src={images[activeImage]} alt={`${item.title} 配图 ${activeImage + 1}`} />}
       </dialog>
     </>

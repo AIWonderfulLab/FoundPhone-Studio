@@ -4164,33 +4164,31 @@
 .weibo-image-viewer {
   position: fixed;
   inset: 0;
-  margin: auto;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
   padding: 0;
   border: 0;
-  background: transparent;
-  max-width: 94vw;
-  max-height: 90dvh;
+  background: #000;
+  overflow: auto;
+  cursor: zoom-out;
 }
-.weibo-image-viewer::backdrop {
-  background: rgb(0 0 0 / 88%);
+.weibo-image-viewer[open] {
+  display: flex;
+  flex-direction: column;
 }
 .weibo-image-viewer img {
   display: block;
-  max-width: min(94vw, 960px);
-  max-height: 86dvh;
-  margin: 0;
-  object-fit: contain;
-}
-.weibo-image-viewer button {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: rgb(0 0 0 / 75%);
-  color: white;
-  font-size: 24px;
+  width: 100%;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  flex: none;
+  margin: auto 0;
+  border-radius: 0;
 }
 
 .weibo-post .weibo-actions {

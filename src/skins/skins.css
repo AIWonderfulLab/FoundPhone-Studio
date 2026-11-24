@@ -4137,3 +4137,60 @@
 .catalog-slot[hidden] {
   display: none;
 }
+
+.weibo-avatar {
+  position: relative;
+  flex: none;
+}
+.weibo-verified {
+  position: absolute;
+  right: -2px;
+  bottom: -1px;
+  display: grid;
+  place-items: center;
+  width: 13px;
+  height: 13px;
+  border: 1px solid #ffdc48;
+  border-radius: 50%;
+  background: #e33120;
+  color: #ffdc48;
+  font: 800 8px/1 system-ui, sans-serif;
+}
+.weibo-images button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  background: transparent;
+  cursor: zoom-in;
+}
+.weibo-image-viewer {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  max-width: 94vw;
+  max-height: 90dvh;
+}
+.weibo-image-viewer::backdrop {
+  background: rgb(0 0 0 / 88%);
+}
+.weibo-image-viewer img {
+  display: block;
+  max-width: min(94vw, 960px);
+  max-height: 86dvh;
+  margin: 0;
+  object-fit: contain;
+}
+.weibo-image-viewer button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 75%);
+  color: white;
+  font-size: 24px;
+}

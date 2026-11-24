@@ -17,7 +17,7 @@ import {
   Share2,
   ThumbsUp,
 } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { safeMedia, type Item } from "../schema";
 import {
   Avatar,
@@ -120,7 +120,10 @@ export function WeiboSkin(p: Props) {
         {list.map((i) => (
           <article className="weibo-post" key={i.id}>
             <div className="social-author">
-              <Avatar name={i.sender} src={i.avatar} />
+              <span className="weibo-avatar">
+                <Avatar name={i.sender} src={i.avatar} />
+                <span className="weibo-verified" aria-label="认证">V</span>
+              </span>
               <span>
                 <strong>{i.sender}</strong>
                 <small>{[i.time, meta(i, "location")].filter(Boolean).join(" ")}</small>
@@ -144,13 +147,39 @@ function WeiboImages({ item }: { item: Item }) {
     .filter((src) => src.startsWith("data:image/"))
     .map(safeMedia)
     .filter(Boolean);
+  const [activeImage, setActiveImage] = useState<number | null>(null);
+  const dialog = useRef<HTMLDialogElement>(null);
   if (!images.length) return null;
   return (
-    <div className={images.length > 1 ? "weibo-images multiple" : "weibo-images"}>
-      {images.map((src, index) => (
-        <img key={index} src={src} alt={`${item.title} 配图 ${index + 1}`} loading="lazy" />
-      ))}
-    </div>
+    <>
+      <div className={images.length > 1 ? "weibo-images multiple" : "weibo-images"}>
+        {images.map((src, index) => (
+          <button
+            key={index}
+            type="button"
+            aria-label={`放大查看第 ${index + 1} 张配图`}
+            onClick={() => {
+              setActiveImage(index);
+              dialog.current?.showModal();
+            }}
+          >
+            <img src={src} alt={`${item.title} 配图 ${index + 1}`} loading="lazy" />
+          </button>
+        ))}
+      </div>
+      <dialog
+        ref={dialog}
+        className="weibo-image-viewer"
+        aria-label="微博大图"
+        onClose={() => setActiveImage(null)}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) dialog.current?.close();
+        }}
+      >
+        <button type="button" aria-label="关闭大图" onClick={() => dialog.current?.close()}>×</button>
+        {activeImage !== null && <img src={images[activeImage]} alt={`${item.title} 配图 ${activeImage + 1}`} />}
+      </dialog>
+    </>
   );
 }
 export function XSkin(p: Props) {

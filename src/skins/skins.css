@@ -4194,3 +4194,22 @@
   color: white;
   font-size: 24px;
 }
+
+.weibo-post .weibo-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  padding: 8px 13px;
+  color: inherit;
+}
+.weibo-post .weibo-actions > :is(span, button) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 32px;
+  margin: 0;
+  padding: 0;
+  gap: 6px;
+  color: inherit;
+  font-size: 13px;
+}

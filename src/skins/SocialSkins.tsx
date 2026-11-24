@@ -14,7 +14,8 @@ import {
   Repeat2,
   User,
   Users,
-  Share2,
+  ExternalLink,
+  MessageSquareMore,
   ThumbsUp,
 } from "lucide-react";
 import { useRef, useState } from "react";
@@ -70,11 +71,11 @@ function WeiboActions({ p, item }: { p: Props; item: Item }) {
   return (
     <div className="social-actions weibo-actions">
       <span aria-label="转发">
-        <Share2 size={17} />
+        <ExternalLink size={17} />
         {meta(item, "reposts", "转发")}
       </span>
       <span aria-label="评论">
-        <MessageCircle size={17} />
+        <MessageSquareMore size={17} />
         {meta(item, "commentCount") || item.comments.length || "评论"}
       </span>
       <button

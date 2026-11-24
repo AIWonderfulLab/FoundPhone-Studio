@@ -94,7 +94,17 @@ function WeiboActions({ p, item }: { p: Props; item: Item }) {
 export function WeiboSkin(p: Props) {
   const { tab, setTab, items } = useContent(p, "关注");
   const [feed, setFeed] = useState("全部");
-  const list = tab === "我" || feed === "全部" ? items : items.filter((i) => i.folder === feed);
+  const personalAuthor = "陈瑶 Sebrina";
+  const followingAuthor = "张月 YueZhang";
+  const hasAuthorTabs = items.some(
+    ({ sender }) => sender === personalAuthor || sender === followingAuthor,
+  );
+  const tabAuthor = tab === "我" ? personalAuthor : followingAuthor;
+  const tabItems = hasAuthorTabs ? items.filter(({ sender }) => sender === tabAuthor) : items;
+  const folders = groupItems(tabItems).filter((folder) => folder !== "未分类");
+  const list = tab === "我" || !folders.includes(feed)
+    ? tabItems
+    : tabItems.filter((item) => item.folder === feed);
   return (
     <div className="catalog-skin weibo-ui">
       <Header p={p} />
@@ -111,9 +121,9 @@ export function WeiboSkin(p: Props) {
         ))}
       </div>
       <div className="catalog-scroll">
-        {tab !== "我" && groupItems(items).some((g) => g !== "未分类") && (
+        {tab !== "我" && folders.length > 0 && (
           <div className="weibo-feed-filter">
-            {["全部", ...groupItems(items).filter((g) => g !== "未分类")].map((g) => (
+            {["全部", ...folders].map((g) => (
               <button key={g} onClick={() => setFeed(g)}>{g}</button>
             ))}
           </div>

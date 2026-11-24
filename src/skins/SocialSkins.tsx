@@ -18,7 +18,7 @@ import {
   ThumbsUp,
 } from "lucide-react";
 import { useState } from "react";
-import type { Item } from "../schema";
+import { safeMedia, type Item } from "../schema";
 import {
   Avatar,
   Empty,
@@ -69,14 +69,14 @@ function WeiboActions({ p, item }: { p: Props; item: Item }) {
   const [liked, setLiked] = useSkinState<boolean>(p, `liked-${item.id}`, false);
   return (
     <div className="social-actions weibo-actions">
-      <button aria-label={`转发${item.title}`} onClick={() => p.onItem(item)}>
+      <span aria-label="转发">
         <Share2 size={17} />
         {meta(item, "reposts", "转发")}
-      </button>
-      <button aria-label={`评论${item.title}`} onClick={() => p.onItem(item)}>
+      </span>
+      <span aria-label="评论">
         <MessageCircle size={17} />
         {meta(item, "commentCount") || item.comments.length || "评论"}
-      </button>
+      </span>
       <button
         aria-label={`喜欢${item.title}`}
         aria-pressed={liked}
@@ -91,9 +91,9 @@ function WeiboActions({ p, item }: { p: Props; item: Item }) {
   );
 }
 export function WeiboSkin(p: Props) {
-  const { tab, setTab, q, setQ, items } = useContent(p, "关注");
+  const { tab, setTab, items } = useContent(p, "关注");
   const [feed, setFeed] = useState("全部");
-  const list = feed === "全部" ? items : items.filter((i) => i.folder === feed);
+  const list = tab === "我" || feed === "全部" ? items : items.filter((i) => i.folder === feed);
   return (
     <div className="catalog-skin weibo-ui">
       <Header p={p} />
@@ -102,6 +102,7 @@ export function WeiboSkin(p: Props) {
           <button
             key={t}
             className={tab === t ? "selected" : ""}
+            aria-pressed={tab === t}
             onClick={() => setTab(t)}
           >
             {t}
@@ -109,38 +110,46 @@ export function WeiboSkin(p: Props) {
         ))}
       </div>
       <div className="catalog-scroll">
-        {tab === "我" ? (
-          <div className="weibo-profile">
-            <Avatar name={p.owner ?? "我"} />
-            <h2>{p.owner ?? "我"}</h2>
-            <span>{items.length} 条微博</span>
+        {tab !== "我" && groupItems(items).some((g) => g !== "未分类") && (
+          <div className="weibo-feed-filter">
+            {["全部", ...groupItems(items).filter((g) => g !== "未分类")].map((g) => (
+              <button key={g} onClick={() => setFeed(g)}>{g}</button>
+            ))}
           </div>
-        ) : (
-          <>
-            <SearchBox value={q} set={setQ} />
-            <div className="weibo-feed-filter">
-              {["全部", ...groupItems(items).filter((g) => g !== "未分类")].map(
-                (g) => (
-                  <button key={g} onClick={() => setFeed(g)}>
-                    {g}
-                  </button>
-                ),
-              )}
-            </div>
-          </>
         )}
         {list.map((i) => (
           <article className="weibo-post" key={i.id}>
-            <PostHeader p={p} item={i} />
-            <button className="social-body" onClick={() => p.onItem(i)}>
+            <div className="social-author">
+              <Avatar name={i.sender} src={i.avatar} />
+              <span>
+                <strong>{i.sender}</strong>
+                <small>{[i.time, meta(i, "location")].filter(Boolean).join(" ")}</small>
+              </span>
+            </div>
+            <div className="social-body">
               <p>{i.body}</p>
-              {i.media && <Media item={i} />}
-            </button>
+              {i.media && !i.media.startsWith("data:image/") && <Media item={i} />}
+              <WeiboImages item={i} />
+            </div>
             <WeiboActions p={p} item={i} />
           </article>
         ))}
         <Empty items={list} />
       </div>
+    </div>
+  );
+}
+function WeiboImages({ item }: { item: Item }) {
+  const images = [item.media, ...(item.images ?? [])]
+    .filter((src) => src.startsWith("data:image/"))
+    .map(safeMedia)
+    .filter(Boolean);
+  if (!images.length) return null;
+  return (
+    <div className={images.length > 1 ? "weibo-images multiple" : "weibo-images"}>
+      {images.map((src, index) => (
+        <img key={index} src={src} alt={`${item.title} 配图 ${index + 1}`} loading="lazy" />
+      ))}
     </div>
   );
 }

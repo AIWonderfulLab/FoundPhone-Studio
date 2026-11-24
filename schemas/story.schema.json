@@ -383,6 +383,11 @@
                 "event"
               ]
             },
+            "images": {
+              "type": "array",
+              "maxItems": 17,
+              "items": { "type": "string", "pattern": "^data:image/" }
+            },
             "media": {
               "default": "",
               "type": "string"

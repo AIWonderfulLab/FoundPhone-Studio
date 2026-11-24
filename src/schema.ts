@@ -25,6 +25,7 @@ export const itemSchema = z.object({
     ])
     .default("text"),
   media: z.string().default(""),
+  images: z.array(z.string().refine((src) => src.startsWith("data:image/") && !!safeMedia(src))).max(17).optional(),
   hidden: z.boolean().default(false),
   unlock: z.string().default(""),
   password: z.string().default(""),

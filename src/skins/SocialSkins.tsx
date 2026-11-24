@@ -133,7 +133,14 @@ export function WeiboSkin(p: Props) {
             <div className="social-body">
               <p>{i.body}</p>
               {i.media && !i.media.startsWith("data:image/") && <Media item={i} />}
-              <WeiboImages item={i} />
+              {meta(i, "repostAuthor") ? (
+                <blockquote className="weibo-repost">
+                  <p><strong>@{meta(i, "repostAuthor")}</strong>：{meta(i, "repostBody")}</p>
+                  <WeiboImages item={i} />
+                </blockquote>
+              ) : (
+                <WeiboImages item={i} />
+              )}
             </div>
             <WeiboActions p={p} item={i} />
           </article>

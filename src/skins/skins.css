@@ -2010,6 +2010,23 @@
   border-top: 1px solid #f2f2f2;
   padding: 12px 16px 8px;
 }
+.weibo-repost {
+  margin: 9px 0 0;
+  padding: 10px 11px 12px;
+  border-radius: 8px;
+  background: #f5f6f8;
+  color: #424850;
+}
+.weibo-repost > p {
+  margin: 0 0 8px;
+}
+.weibo-repost strong {
+  color: #415d80;
+  font-weight: 600;
+}
+.weibo-repost .weibo-images > button {
+  width: min(72%, 250px);
+}
 .weibo-images img {
   width: 100%;
   display: block;

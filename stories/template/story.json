@@ -3,7 +3,7 @@
   "id": "ui-test-phone-v2",
   "title": "瑶瑶姐的手机",
   "description": "仅用于界面测试，不含剧情",
-  "revision": 16,
+  "revision": 17,
   "phone": {
     "owner": "小七🐱🌸",
     "passcode": "0914",
@@ -1357,7 +1357,7 @@
           "id": "chat-moon-july-rewrite-094",
           "senderId": "owner",
           "time": "2026-07-28 19:42",
-          "body": "你今天还是没有拍给我",
+          "body": "你今天吃什么了呀，都没有拍给我看",
           "meta": {}
         },
         {

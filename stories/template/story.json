@@ -3,7 +3,7 @@
   "id": "ui-test-phone-v2",
   "title": "瑶瑶姐的手机",
   "description": "仅用于界面测试，不含剧情",
-  "revision": 17,
+  "revision": 18,
   "phone": {
     "owner": "小七🐱🌸",
     "passcode": "0914",
@@ -1867,7 +1867,7 @@
           "id": "chat-moon-july-rewrite-166",
           "senderId": "baby-moon",
           "time": "2026-07-28 20:10",
-          "body": "那我算什么",
+          "body": "那我们呢",
           "meta": {}
         },
         {
@@ -2485,113 +2485,6 @@
           "meta": {}
         },
         {
-          "id": "chat-moon-july-rewrite-252",
-          "senderId": "baby-moon",
-          "time": "2026-07-28 20:36",
-          "body": "瑶瑶",
-          "meta": {
-            "showTimestamp": "true"
-          }
-        },
-        {
-          "id": "chat-moon-july-rewrite-253",
-          "senderId": "owner",
-          "time": "2026-07-28 20:36",
-          "body": "怎么啦",
-          "meta": {}
-        },
-        {
-          "id": "chat-moon-july-rewrite-254",
-          "senderId": "baby-moon",
-          "time": "2026-07-28 20:36",
-          "body": "昨天和今天说的这些",
-          "meta": {}
-        },
-        {
-          "id": "chat-moon-july-rewrite-255",
-          "senderId": "baby-moon",
-          "time": "2026-07-28 20:36",
-          "body": "我还没有完全想清楚",
-          "meta": {}
-        },
-        {
-          "id": "chat-moon-july-rewrite-256",
-          "senderId": "owner",
-          "time": "2026-07-28 20:36",
-          "body": "那就慢慢想",
-          "meta": {}
-        },
-        {
-          "id": "chat-moon-july-rewrite-257",
-          "senderId": "baby-moon",
-          "time": "2026-07-28 20:36",
-          "body": "你不问了吗",
-          "meta": {}
-        },
-        {
-          "id": "chat-moon-july-rewrite-258",
-          "senderId": "owner",
-          "time": "2026-07-28 20:36",
-          "body": "微信里先不问了",
-          "meta": {}
-        },
-        {
-          "id": "chat-moon-july-rewrite-259",
-          "senderId": "baby-moon",
-          "time": "2026-07-28 20:36",
-          "body": "为什么",
-          "meta": {}
-        },
-        {
-          "id": "chat-moon-july-rewrite-260",
-          "senderId": "owner",
-          "time": "2026-07-28 20:36",
-          "body": "有些话要看着你才问得出来",
-          "meta": {}
-        },
-        {
-          "id": "chat-moon-july-rewrite-261",
-          "senderId": "baby-moon",
-          "time": "2026-07-28 20:36",
-          "body": "你到时候也不一定敢问",
-          "meta": {}
-        },
-        {
-          "id": "chat-moon-july-rewrite-262",
-          "senderId": "owner",
-          "time": "2026-07-28 20:36",
-          "body": "那你别躲",
-          "meta": {}
-        },
-        {
-          "id": "chat-moon-july-rewrite-263",
-          "senderId": "baby-moon",
-          "time": "2026-07-28 20:36",
-          "body": "我没有躲",
-          "meta": {}
-        },
-        {
-          "id": "chat-moon-july-rewrite-264",
-          "senderId": "owner",
-          "time": "2026-07-28 20:36",
-          "body": "好",
-          "meta": {}
-        },
-        {
-          "id": "chat-moon-july-rewrite-265",
-          "senderId": "owner",
-          "time": "2026-07-28 20:36",
-          "body": "那等你回来",
-          "meta": {}
-        },
-        {
-          "id": "chat-moon-july-rewrite-266",
-          "senderId": "baby-moon",
-          "time": "2026-07-28 20:36",
-          "body": "嗯",
-          "meta": {}
-        },
-        {
           "id": "chat-moon-july-rewrite-267",
           "senderId": "baby-moon",
           "time": "2026-07-29 10:47",
@@ -2684,53 +2577,39 @@
           "id": "chat-moon-july-rewrite-279",
           "senderId": "owner",
           "time": "2026-07-29 10:47",
-          "body": "回来以后有时间吗",
+          "body": "那我记着了",
           "meta": {}
         },
         {
           "id": "chat-moon-july-rewrite-280",
           "senderId": "baby-moon",
           "time": "2026-07-29 10:47",
-          "body": "怎么了",
+          "body": "记什么",
           "meta": {}
         },
         {
           "id": "chat-moon-july-rewrite-281",
           "senderId": "owner",
           "time": "2026-07-29 10:47",
-          "body": "上次没吃成的饭",
+          "body": "有人答应回来请我吃饭",
           "meta": {}
         },
         {
           "id": "chat-moon-july-rewrite-282",
-          "senderId": "owner",
+          "senderId": "baby-moon",
           "time": "2026-07-29 10:47",
-          "body": "还补不补",
+          "body": "我又没忘",
           "meta": {}
         },
         {
           "id": "chat-moon-july-rewrite-283",
           "senderId": "baby-moon",
           "time": "2026-07-29 10:47",
-          "body": "本来就是我没去",
-          "meta": {}
-        },
-        {
-          "id": "chat-moon-july-rewrite-284",
-          "senderId": "owner",
-          "time": "2026-07-29 10:47",
-          "body": "所以你请我",
-          "meta": {}
-        },
-        {
-          "id": "chat-moon-july-rewrite-285",
-          "senderId": "baby-moon",
-          "time": "2026-07-29 10:47",
           "body": "晚上吧",
           "meta": {}
         },
         {
-          "id": "chat-moon-july-rewrite-286",
+          "id": "chat-moon-july-rewrite-284",
           "senderId": "owner",
           "time": "2026-07-29 10:47",
           "body": "好",

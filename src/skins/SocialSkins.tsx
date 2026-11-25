@@ -109,9 +109,12 @@ function newestWeiboFirst(items: Item[]) {
   }).sort((a, b) => b.time - a.time).map(({ item }) => item);
 }
 
+const weiboTabs = ["关注", "发现", "我"];
+
 export function WeiboSkin(p: Props) {
   const { tab, setTab, items } = useContent(p, "关注");
   const [feed, setFeed] = useState("全部");
+  const swipeStart = useRef<{ id: number; x: number; y: number } | null>(null);
   const personalAuthor = "陈瑶 Sebrina";
   const followingAuthor = "张月 YueZhang";
   const hasAuthorTabs = items.some(
@@ -124,10 +127,33 @@ export function WeiboSkin(p: Props) {
     tab === "我" || !folders.includes(feed) ? tabItems : tabItems.filter((item) => item.folder === feed),
   );
   return (
-    <div className="catalog-skin weibo-ui">
-      <Header p={p} />
+    <div
+      className="catalog-skin weibo-ui"
+      style={{ touchAction: "pan-y pinch-zoom" }}
+      onTouchStart={(event) => {
+        const touch = event.touches[0];
+        swipeStart.current = event.touches.length === 1 &&
+          !(event.target instanceof Element && event.target.closest("dialog"))
+          ? { id: touch.identifier, x: touch.clientX, y: touch.clientY }
+          : null;
+      }}
+      onTouchCancel={() => { swipeStart.current = null; }}
+      onTouchEnd={(event) => {
+        const start = swipeStart.current;
+        swipeStart.current = null;
+        if (!start) return;
+        const touch = Array.from(event.changedTouches).find(({ identifier }) => identifier === start.id);
+        if (!touch) return;
+        const dx = touch.clientX - start.x;
+        const dy = touch.clientY - start.y;
+        if (Math.abs(dx) < 55 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+        const next = weiboTabs[weiboTabs.indexOf(tab) + (dx < 0 ? 1 : -1)];
+        if (next) setTab(next);
+      }}
+    >
+      {p.creator && <Header p={p} />}
       <div className="weibo-sections">
-        {["关注", "发现", "我"].map((t) => (
+        {weiboTabs.map((t) => (
           <button
             key={t}
             className={tab === t ? "selected" : ""}
@@ -138,7 +164,7 @@ export function WeiboSkin(p: Props) {
           </button>
         ))}
       </div>
-      <div className="catalog-scroll">
+      <div className="catalog-scroll" key={tab}>
         {tab !== "我" && folders.length > 0 && (
           <div className="weibo-feed-filter">
             {["全部", ...folders].map((g) => (

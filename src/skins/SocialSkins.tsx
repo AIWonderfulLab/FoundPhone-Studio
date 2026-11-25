@@ -91,6 +91,24 @@ function WeiboActions({ p, item }: { p: Props; item: Item }) {
     </div>
   );
 }
+const weiboDatePattern = /^(?:(\d{2}|\d{4})-)?(\d{1,2})-(\d{1,2})(?:\s+(\d{1,2}):(\d{2}))?$/;
+
+function weiboYear(year: string) {
+  return Number(year) + (year.length === 2 ? 2000 : 0);
+}
+
+function newestWeiboFirst(items: Item[]) {
+  const dates = items.map((item) => ({ item, date: weiboDatePattern.exec(item.time.trim()) }));
+  const defaultYear = Math.max(0, ...dates.map(({ date }) => date?.[1] ? weiboYear(date[1]) : 0));
+  return dates.map(({ item, date }) => {
+    if (!date) return { item, time: -Infinity };
+    const [, year, month, day, hour = "0", minute = "0"] = date;
+    const time = (year ? weiboYear(year) : defaultYear) * 100000000
+      + Number(month) * 1000000 + Number(day) * 10000 + Number(hour) * 100 + Number(minute);
+    return { item, time };
+  }).sort((a, b) => b.time - a.time).map(({ item }) => item);
+}
+
 export function WeiboSkin(p: Props) {
   const { tab, setTab, items } = useContent(p, "关注");
   const [feed, setFeed] = useState("全部");
@@ -102,9 +120,9 @@ export function WeiboSkin(p: Props) {
   const tabAuthor = tab === "我" ? personalAuthor : followingAuthor;
   const tabItems = hasAuthorTabs ? items.filter(({ sender }) => sender === tabAuthor) : items;
   const folders = groupItems(tabItems).filter((folder) => folder !== "未分类");
-  const list = tab === "我" || !folders.includes(feed)
-    ? tabItems
-    : tabItems.filter((item) => item.folder === feed);
+  const list = newestWeiboFirst(
+    tab === "我" || !folders.includes(feed) ? tabItems : tabItems.filter((item) => item.folder === feed),
+  );
   return (
     <div className="catalog-skin weibo-ui">
       <Header p={p} />

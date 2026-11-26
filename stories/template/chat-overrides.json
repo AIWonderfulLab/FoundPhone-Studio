@@ -1,4 +1,7 @@
 {
+  "removeContentIds": {
+    "safari": ["test-item-safari"]
+  },
   "chats": [
     {
       "chatId": "chat-ding-bowl",

@@ -3,7 +3,7 @@
   "id": "ui-test-phone-v2",
   "title": "瑶瑶姐的手机",
   "description": "仅用于界面测试，不含剧情",
-  "revision": 20,
+  "revision": 22,
   "phone": {
     "owner": "小七🐱🌸",
     "passcode": "0914",
@@ -175,7 +175,7 @@
           "id": "chat-moon-july-002",
           "senderId": "owner",
           "time": "2026-07-23 21:30",
-          "body": "月月 有件事想跟你说一下 就是前几天我的网易云账号被粉丝查到了 我之前有和一位合作过的演员同事互关过 偶尔会转发一下音乐",
+          "body": "月月 我网易云被人翻出来了",
           "meta": {
             "showTimestamp": "true"
           }
@@ -184,7 +184,7 @@
           "id": "chat-moon-july-003",
           "senderId": "owner",
           "time": "2026-07-23 21:30",
-          "body": "这都是之前的事了 然后这几个月太忙忘记取关了",
+          "body": "以前的听歌记录都被截图了 挺离谱的",
           "meta": {}
         },
         {
@@ -204,9 +204,23 @@
           "meta": {}
         },
         {
-          "id": "chat-moon-july-006",
+          "id": "chat-moon-july-005-probe",
           "senderId": "owner",
           "time": "2026-07-23 21:40",
+          "body": "就这个呀",
+          "meta": {}
+        },
+        {
+          "id": "chat-moon-july-005-reply",
+          "senderId": "baby-moon",
+          "time": "2026-07-23 21:41",
+          "body": "不然呢",
+          "meta": {}
+        },
+        {
+          "id": "chat-moon-july-006",
+          "senderId": "owner",
+          "time": "2026-07-23 21:41",
           "body": "小兔子卖萌的表情包",
           "meta": {
             "alt": "小兔子卖萌的表情包"

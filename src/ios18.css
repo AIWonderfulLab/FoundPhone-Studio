@@ -143,8 +143,8 @@
   gap: 6px;
 }
 .ios18 .app-icon {
-  width: 60px;
-  height: 60px;
+  width: 64px;
+  height: 64px;
   border-radius: 15px;
   position: relative;
   isolation: isolate;
@@ -184,8 +184,8 @@
   text-shadow: 0 1px 4px #0008;
 }
 .ios18 .folder-icon {
-  width: 60px;
-  height: 60px;
+  width: 64px;
+  height: 64px;
   border-radius: 16px;
   backdrop-filter: blur(18px) saturate(1.5);
   background: #ffffff30;
@@ -254,8 +254,8 @@
     0 4px 14px #0001;
 }
 .ios18 .dock .app-icon {
-  width: 60px;
-  height: 60px;
+  width: 64px;
+  height: 64px;
   border-radius: 15px;
 }
 .ios18 .home-indicator {

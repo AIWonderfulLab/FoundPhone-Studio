@@ -64,6 +64,15 @@ import {
 } from "./schema";
 import { dispatch, choose, visible, advance } from "./engine";
 import { db } from "./persistence";
+const currentDeviceTime = () =>
+  new Intl.DateTimeFormat("zh-CN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  })
+    .format(new Date())
+    .replace(/^24:/, "00:");
+
 export function AppIcon({
   id,
   name,
@@ -164,6 +173,14 @@ function PhoneRuntime({
   const [own, setOwn] = useState(() => initialRuntime(work));
   const [ready, setReady] = useState(creator || !!external);
   const [loadError, setLoadError] = useState("");
+  const [statusTime, setStatusTime] = useState(currentDeviceTime);
+  useEffect(() => {
+    const interval = window.setInterval(
+      () => setStatusTime(currentDeviceTime()),
+      1000,
+    );
+    return () => window.clearInterval(interval);
+  }, []);
   useEffect(() => {
     const el = shell.current;
     if (!el) return;
@@ -399,7 +416,7 @@ function PhoneRuntime({
               className="status-time"
               aria-label="通知中心"
             >
-              {displayTime}
+              {statusTime}
               <StatusGlyph kind="silent" />
             </button>
             <div className="dynamic-island" />

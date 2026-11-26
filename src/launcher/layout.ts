@@ -60,7 +60,9 @@ export function defaultLayout(input: Work): DeviceLayout {
     version: 1,
     workId: w.id,
     previewLayoutRevision:
-      w.id === "ui-test-phone-v2" ? (hasB612Shortcut ? (showsWeibo ? 5 : 4) : 1) : 0,
+      w.id === "ui-test-phone-v2"
+        ? (w.updatedAt >= 29 ? 6 : hasB612Shortcut ? (showsWeibo ? 5 : 4) : 1)
+        : 0,
     apps: structuredClone(w.apps)
       .sort((a, b) => (a.id === "appstore" ? -1 : b.id === "appstore" ? 1 : 0))
       .map((a) =>
@@ -197,6 +199,18 @@ export function validateLayout(raw: unknown, input: Work) {
     delete layout.positions.weibo;
     layout.previewLayoutRevision = 5;
   }
+  if (w.id === "ui-test-phone-v2" && w.updatedAt >= 29 && layout.previewLayoutRevision < 6) {
+    const hidden = new Set(["notes", "maps", "music", "mail", "files", "find", "wallet"]);
+    for (const app of layout.apps) {
+      if (!hidden.has(app.id)) continue;
+      app.visible = false;
+      app.dock = false;
+      delete layout.positions[app.id];
+    }
+    layout.order = layout.order.filter((id) => !hidden.has(id));
+    placePreviewSocialApps(layout);
+    layout.previewLayoutRevision = 6;
+  }
   const entries = homeEntries(layout),
     packed = packHome(entries, layout.positions);
   for (const entry of entries) {
@@ -209,6 +223,45 @@ export function validateLayout(raw: unknown, input: Work) {
       throw Error("桌面位置冲突或超出范围");
   }
   return layout;
+}
+function placePreviewSocialApps(layout: DeviceLayout) {
+  const ids = ["wechat", "weibo"];
+  const pair = ids.map((id) => layout.apps.find((app) => app.id === id)!);
+  for (const app of pair) {
+    app.installed = true;
+    app.visible = true;
+    app.folder = "";
+    app.dock = false;
+    delete layout.positions[app.id];
+  }
+  layout.order = layout.order.filter((id) => !ids.includes(id));
+  layout.apps = layout.apps.filter((app) => !ids.includes(app.id));
+  layout.apps.splice(layout.apps.findIndex((app) => app.id === "settings"), 0, ...pair);
+
+  const entries = homeEntries(layout);
+  const packed = packHome(entries, layout.positions);
+  if (packed.some((page) => {
+    const wechat = page.find((cell) => cell.entry.key === "wechat");
+    return wechat && page.some((cell) =>
+      cell.entry.key === "weibo" && cell.y === wechat.y && cell.x === wechat.x + 1,
+    );
+  })) return;
+
+  // Leave manually positioned icons and widgets in place when finding a row.
+  const pages = packHome(entries.filter((entry) => !ids.includes(entry.key)), layout.positions);
+  for (let page = 0; page <= pages.length && page < 20; page++) {
+    for (let y = 0; y < 6; y++) {
+      for (let x = 0; x < 3; x++) {
+        const occupied = pages[page]?.some((cell) =>
+          y >= cell.y && y < cell.y + cell.h && x < cell.x + cell.w && x + 1 >= cell.x,
+        );
+        if (occupied) continue;
+        layout.positions.wechat = { page, x, y };
+        layout.positions.weibo = { page, x: x + 1, y };
+        return;
+      }
+    }
+  }
 }
 export function useDeviceLayout(authored: Work, creator = false) {
   const base = useMemo(() => ensureAppStore(authored), [authored]);

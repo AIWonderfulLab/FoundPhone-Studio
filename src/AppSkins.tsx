@@ -48,6 +48,7 @@ export type SkinProps = {
   name: string;
   items: Item[];
   albumPhotos?: Item[];
+  phoneContacts?: Item[];
   creator: boolean;
   onRead: (id: string) => void;
   onItem: (i: Item) => void;

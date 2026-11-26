@@ -8,6 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock,
+  Delete,
   Download,
   FileText,
   Folder,
@@ -46,40 +47,36 @@ export function PhoneSkin(p: Props) {
   const { tab, setTab, q, setQ, items } = useContent(p, "最近通话");
   const [digits, setDigits] = useState(""),
     [call, setCall] = useState("");
+  const keypad = tab === "拨号键盘";
+  const contactsTab = tab === "通讯录";
+  const contacts = (p.phoneContacts ?? []).filter(
+    (item) =>
+      meta(item, "owner") !== "true" &&
+      (item.title + meta(item, "phone")).toLowerCase().includes(q.toLowerCase()),
+  );
   const list = tab === "收藏" ? items.filter((i) => i.favorite) : items;
   return (
     <div className="catalog-skin native-phone">
       <Header p={p} />
-      <div className="catalog-scroll">
-        <h1>{tab}</h1>
-        {tab === "拨号键盘" ? (
-          <div className="dialer">
+      <div
+        className={`catalog-scroll${keypad ? " dialer-scroll" : ""}${contactsTab ? " native-contacts" : ""}`}
+      >
+        {keypad ? (
+          <div className="dialer" role="group" aria-label="拨号键盘">
             <output>{digits || "输入号码"}</output>
-            <div>
-              {["1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#"].map(
-                (k) => (
-                  <button key={k} onClick={() => setDigits((s) => s + k)}>
-                    {k}
-                    <small>
-                      {
-                        (
-                          {
-                            "2": "ABC",
-                            "3": "DEF",
-                            "4": "GHI",
-                            "5": "JKL",
-                            "6": "MNO",
-                            "7": "PQRS",
-                            "8": "TUV",
-                            "9": "WXYZ",
-                          } as Record<string, string>
-                        )[k]
-                      }
-                    </small>
-                  </button>
-                ),
-              )}
-            </div>
+            {["1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#"].map(
+              (key) => (
+                <button
+                  className="dial-key"
+                  key={key}
+                  aria-label={key}
+                  onClick={() => setDigits((s) => s + key)}
+                >
+                  {key}
+                  <small>{DIAL_LETTERS[key]}</small>
+                </button>
+              ),
+            )}
             <button
               className="dial-call"
               disabled={!digits}
@@ -92,12 +89,24 @@ export function PhoneSkin(p: Props) {
             >
               <Phone size={24} />
             </button>
-            <button onClick={() => setDigits((s) => s.slice(0, -1))}>
-              删除
+            <button
+              className="dial-delete"
+              aria-label="删除末位号码"
+              disabled={!digits}
+              onClick={() => setDigits((s) => s.slice(0, -1))}
+            >
+              <Delete size={24} aria-hidden="true" />
             </button>
           </div>
+        ) : contactsTab ? (
+          <>
+            <h1>{tab}</h1>
+            <SearchBox value={q} set={setQ} />
+            <ContactRows items={contacts} onItem={p.onItem} />
+          </>
         ) : (
           <>
+            <h1>{tab}</h1>
             <SearchBox value={q} set={setQ} />
             {list.map((i) => (
               <button
@@ -113,7 +122,7 @@ export function PhoneSkin(p: Props) {
                     {meta(i, "status", "通话记录")}
                   </small>
                 </span>
-                <time>{i.time.slice(5, 10)}</time>
+                <time>{i.time.slice(5)}</time>
               </button>
             ))}
             <Empty items={list} />
@@ -140,8 +149,20 @@ export function PhoneSkin(p: Props) {
     </div>
   );
 }
+const DIAL_LETTERS: Record<string, string> = {
+  "2": "ABC",
+  "3": "DEF",
+  "4": "GHI",
+  "5": "JKL",
+  "6": "MNO",
+  "7": "PQRS",
+  "8": "TUV",
+  "9": "WXYZ",
+};
 export function ContactsSkin(p: Props) {
   const { q, setQ, items } = useContent(p, "所有联系人");
+  const ownerCard = p.items.find((item) => meta(item, "owner") === "true");
+  const contacts = items.filter((item) => item !== ownerCard);
   return (
     <div className="catalog-skin native-contacts">
       <Header p={p} />
@@ -151,35 +172,42 @@ export function ContactsSkin(p: Props) {
         <button
           className="contact-self"
           onClick={() => {
-            if (items[0]) p.onItem(items[0]);
+            if (ownerCard) p.onItem(ownerCard);
             else if (p.creator) p.onAdd();
           }}
         >
-          <Avatar name={p.owner ?? "我"} />
+          <Avatar name={p.owner ?? "我"} src={ownerCard?.avatar} />
           <span>
             <strong>{p.owner ?? "我的名片"}</strong>
             <small>我的名片</small>
           </span>
         </button>
-        {groupItems(items, "所有联系人").map((g) => (
-          <section key={g}>
-            <h4 className="native-section">{g}</h4>
-            {items
-              .filter((i) => (i.folder || "所有联系人") === g)
-              .sort((a, b) => a.title.localeCompare(b.title, "zh-CN"))
-              .map((i) => (
-                <Row
-                  key={i.id}
-                  item={i}
-                  onItem={p.onItem}
-                  leading={<Avatar name={i.title} />}
-                />
-              ))}
-          </section>
-        ))}
-        <Empty items={items} />
+        <ContactRows items={contacts} onItem={p.onItem} />
       </div>
     </div>
+  );
+}
+function ContactRows({ items, onItem }: Pick<Props, "items" | "onItem">) {
+  return (
+    <>
+      {groupItems(items, "所有联系人").map((g) => (
+        <section key={g}>
+          <h4 className="native-section">{g}</h4>
+          {items
+            .filter((i) => (i.folder || "所有联系人") === g)
+            .sort((a, b) => a.title.localeCompare(b.title, "zh-CN"))
+            .map((i) => (
+              <Row
+                key={i.id}
+                item={i}
+                onItem={onItem}
+                leading={<Avatar name={i.title} src={i.avatar} />}
+              />
+            ))}
+        </section>
+      ))}
+      <Empty items={items} />
+    </>
   );
 }
 export function PhotosSkin(p: Props) {

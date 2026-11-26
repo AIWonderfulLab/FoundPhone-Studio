@@ -127,7 +127,9 @@ export function NativeDetail({
           </div>
           <div className="native-detail-group">
             <small>手机</small>
-            <p className="native-blue">{item.meta.phone || "未设置号码"}</p>
+            <p className="native-blue">
+              {item.meta.phone || item.meta.number || "未设置号码"}
+            </p>
           </div>
           <div className="native-detail-group">
             <small>备注</small>

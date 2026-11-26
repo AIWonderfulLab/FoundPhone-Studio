@@ -3,7 +3,7 @@
   "id": "ui-test-phone-v2",
   "title": "瑶瑶姐的手机",
   "description": "仅用于界面测试，不含剧情",
-  "revision": 28,
+  "revision": 29,
   "phone": {
     "owner": "小七🐱🌸",
     "passcode": "0914",
@@ -15,15 +15,6 @@
   },
   "installedApps": [
     "appstore",
-    {
-      "id": "wechat",
-      "name": "微信",
-      "installed": true,
-      "visible": true,
-      "dock": false,
-      "folder": "",
-      "icon": ""
-    },
     {
       "id": "douyin",
       "name": "抖音",
@@ -57,28 +48,83 @@
       "icon": ""
     },
     "safari",
-    "notes",
-    "calendar",
-    "mail",
-    "clock",
-    "reminders",
-    "files",
-    "music",
-    "maps",
-    "weather",
-    "wallet",
-    "health",
-    "find",
-    "calculator",
-    "settings",
     {
-      "name": "QQ",
+      "id": "notes",
+      "name": "备忘录",
+      "installed": true,
+      "visible": false,
       "dock": false,
       "folder": "",
-      "icon": "",
-      "id": "qq",
+      "icon": ""
+    },
+    "calendar",
+    {
+      "id": "mail",
+      "name": "邮件",
       "installed": true,
-      "visible": false
+      "visible": false,
+      "dock": false,
+      "folder": "",
+      "icon": ""
+    },
+    "clock",
+    "reminders",
+    {
+      "id": "files",
+      "name": "文件",
+      "installed": true,
+      "visible": false,
+      "dock": false,
+      "folder": "",
+      "icon": ""
+    },
+    {
+      "id": "music",
+      "name": "音乐",
+      "installed": true,
+      "visible": false,
+      "dock": false,
+      "folder": "",
+      "icon": ""
+    },
+    {
+      "id": "maps",
+      "name": "地图",
+      "installed": true,
+      "visible": false,
+      "dock": false,
+      "folder": "",
+      "icon": ""
+    },
+    "weather",
+    {
+      "id": "wallet",
+      "name": "钱包",
+      "installed": true,
+      "visible": false,
+      "dock": false,
+      "folder": "",
+      "icon": ""
+    },
+    "health",
+    {
+      "id": "find",
+      "name": "查找",
+      "installed": true,
+      "visible": false,
+      "dock": false,
+      "folder": "",
+      "icon": ""
+    },
+    "calculator",
+    {
+      "id": "wechat",
+      "name": "微信",
+      "installed": true,
+      "visible": true,
+      "dock": false,
+      "folder": "",
+      "icon": ""
     },
     {
       "name": "微博",
@@ -88,6 +134,16 @@
       "id": "weibo",
       "installed": true,
       "visible": true
+    },
+    "settings",
+    {
+      "name": "QQ",
+      "dock": false,
+      "folder": "",
+      "icon": "",
+      "id": "qq",
+      "installed": true,
+      "visible": false
     },
     {
       "name": "小红书",
@@ -3289,22 +3345,513 @@
   "content": {
     "phone": [
       {
-        "id": "test-item-phone",
-        "title": "测试内容",
-        "body": "这是一条测试内容。",
-        "sender": "测试用户",
-        "kind": "text",
-        "meta": {}
+        "id": "recent-call-01",
+        "title": "助理",
+        "body": "通话时长 1分29秒",
+        "time": "2026-10-25 05:02",
+        "meta": {
+          "number": "10032386750",
+          "status": "呼入"
+        }
+      },
+      {
+        "id": "recent-call-02",
+        "title": "月",
+        "body": "通话时长 0分25秒",
+        "time": "2026-10-25 04:49",
+        "meta": {
+          "number": "10058006958",
+          "status": "呼出"
+        }
+      },
+      {
+        "id": "recent-call-03",
+        "title": "哲文",
+        "body": "通话时长 6分8秒",
+        "time": "2026-10-25 03:03",
+        "meta": {
+          "number": "10015979473",
+          "status": "呼出"
+        }
+      },
+      {
+        "id": "recent-call-04",
+        "title": "月",
+        "body": "未接",
+        "time": "2026-10-25 01:32",
+        "meta": {
+          "number": "10058006958",
+          "status": "未接"
+        }
+      },
+      {
+        "id": "recent-call-05",
+        "title": "经纪人",
+        "body": "未接",
+        "time": "2026-10-24 20:35",
+        "meta": {
+          "number": "10042143064",
+          "status": "未接"
+        }
+      },
+      {
+        "id": "recent-call-06",
+        "title": "妈",
+        "body": "未接",
+        "time": "2026-10-24 18:16",
+        "meta": {
+          "number": "10072716021",
+          "status": "未接"
+        }
+      },
+      {
+        "id": "recent-call-07",
+        "title": "助理",
+        "body": "通话时长 4分14秒",
+        "time": "2026-10-24 17:49",
+        "meta": {
+          "number": "10032386750",
+          "status": "呼出"
+        }
+      },
+      {
+        "id": "recent-call-08",
+        "title": "妈",
+        "body": "未接",
+        "time": "2026-10-24 13:44",
+        "meta": {
+          "number": "10072716021",
+          "status": "未接"
+        }
+      },
+      {
+        "id": "recent-call-09",
+        "title": "哲文",
+        "body": "未接",
+        "time": "2026-10-24 08:02",
+        "meta": {
+          "number": "10015979473",
+          "status": "未接"
+        }
+      },
+      {
+        "id": "recent-call-10",
+        "title": "爸",
+        "body": "通话时长 7分21秒",
+        "time": "2026-10-24 02:35",
+        "meta": {
+          "number": "10024443770",
+          "status": "呼入"
+        }
+      },
+      {
+        "id": "recent-call-11",
+        "title": "哲文",
+        "body": "通话时长 3分27秒",
+        "time": "2026-10-23 23:40",
+        "meta": {
+          "number": "10015979473",
+          "status": "呼入"
+        }
+      },
+      {
+        "id": "recent-call-12",
+        "title": "哲文",
+        "body": "通话时长 5分5秒",
+        "time": "2026-10-23 19:17",
+        "meta": {
+          "number": "10015979473",
+          "status": "呼出"
+        }
+      },
+      {
+        "id": "recent-call-13",
+        "title": "哲文",
+        "body": "未接",
+        "time": "2026-10-23 17:02",
+        "meta": {
+          "number": "10015979473",
+          "status": "未接"
+        }
+      },
+      {
+        "id": "recent-call-14",
+        "title": "妈",
+        "body": "通话时长 2分41秒",
+        "time": "2026-10-23 11:55",
+        "meta": {
+          "number": "10072716021",
+          "status": "呼出"
+        }
+      },
+      {
+        "id": "recent-call-15",
+        "title": "妈",
+        "body": "未接",
+        "time": "2026-10-23 08:11",
+        "meta": {
+          "number": "10072716021",
+          "status": "未接"
+        }
+      },
+      {
+        "id": "recent-call-16",
+        "title": "爸",
+        "body": "未接",
+        "time": "2026-10-23 05:37",
+        "meta": {
+          "number": "10024443770",
+          "status": "未接"
+        }
+      },
+      {
+        "id": "recent-call-17",
+        "title": "爸",
+        "body": "未接",
+        "time": "2026-10-23 02:14",
+        "meta": {
+          "number": "10024443770",
+          "status": "未接"
+        }
+      },
+      {
+        "id": "recent-call-18",
+        "title": "月",
+        "body": "通话时长 4分32秒",
+        "time": "2026-10-22 23:28",
+        "meta": {
+          "number": "10058006958",
+          "status": "呼出"
+        }
+      },
+      {
+        "id": "recent-call-19",
+        "title": "经纪人",
+        "body": "通话时长 1分39秒",
+        "time": "2026-10-22 20:29",
+        "meta": {
+          "number": "10042143064",
+          "status": "呼出"
+        }
+      },
+      {
+        "id": "recent-call-20",
+        "title": "月",
+        "body": "通话时长 2分56秒",
+        "time": "2026-10-22 15:12",
+        "meta": {
+          "number": "10058006958",
+          "status": "呼出"
+        }
+      },
+      {
+        "id": "recent-call-21",
+        "title": "月",
+        "body": "未接",
+        "time": "2026-10-22 10:34",
+        "meta": {
+          "number": "10058006958",
+          "status": "未接"
+        }
+      },
+      {
+        "id": "recent-call-22",
+        "title": "月",
+        "body": "通话时长 4分12秒",
+        "time": "2026-10-22 05:01",
+        "meta": {
+          "number": "10058006958",
+          "status": "呼入"
+        }
+      },
+      {
+        "id": "recent-call-23",
+        "title": "妈",
+        "body": "通话时长 3分41秒",
+        "time": "2026-10-22 02:13",
+        "meta": {
+          "number": "10072716021",
+          "status": "呼入"
+        }
+      },
+      {
+        "id": "recent-call-24",
+        "title": "月",
+        "body": "通话时长 2分55秒",
+        "time": "2026-10-21 22:54",
+        "meta": {
+          "number": "10058006958",
+          "status": "呼入"
+        }
+      },
+      {
+        "id": "recent-call-25",
+        "title": "妈",
+        "body": "通话时长 5分26秒",
+        "time": "2026-10-21 22:27",
+        "meta": {
+          "number": "10072716021",
+          "status": "呼出"
+        }
+      },
+      {
+        "id": "recent-call-26",
+        "title": "妈",
+        "body": "通话时长 6分25秒",
+        "time": "2026-10-21 20:31",
+        "meta": {
+          "number": "10072716021",
+          "status": "呼出"
+        }
+      },
+      {
+        "id": "recent-call-27",
+        "title": "月",
+        "body": "未接",
+        "time": "2026-10-21 15:28",
+        "meta": {
+          "number": "10058006958",
+          "status": "未接"
+        }
+      },
+      {
+        "id": "recent-call-28",
+        "title": "月",
+        "body": "通话时长 1分3秒",
+        "time": "2026-10-21 13:40",
+        "meta": {
+          "number": "10058006958",
+          "status": "呼入"
+        }
+      },
+      {
+        "id": "recent-call-29",
+        "title": "爸",
+        "body": "未接",
+        "time": "2026-10-21 09:24",
+        "meta": {
+          "number": "10024443770",
+          "status": "未接"
+        }
+      },
+      {
+        "id": "recent-call-30",
+        "title": "妈",
+        "body": "未接",
+        "time": "2026-10-21 04:07",
+        "meta": {
+          "number": "10072716021",
+          "status": "未接"
+        }
+      },
+      {
+        "id": "recent-call-31",
+        "title": "经纪人",
+        "body": "通话时长 0分30秒",
+        "time": "2026-10-21 00:25",
+        "meta": {
+          "number": "10042143064",
+          "status": "呼入"
+        }
+      },
+      {
+        "id": "recent-call-32",
+        "title": "经纪人",
+        "body": "通话时长 8分4秒",
+        "time": "2026-10-20 22:52",
+        "meta": {
+          "number": "10042143064",
+          "status": "呼入"
+        }
+      },
+      {
+        "id": "recent-call-33",
+        "title": "月",
+        "body": "通话时长 3分9秒",
+        "time": "2026-10-20 21:29",
+        "meta": {
+          "number": "10058006958",
+          "status": "呼入"
+        }
+      },
+      {
+        "id": "recent-call-34",
+        "title": "助理",
+        "body": "通话时长 1分23秒",
+        "time": "2026-10-20 19:11",
+        "meta": {
+          "number": "10032386750",
+          "status": "呼出"
+        }
+      },
+      {
+        "id": "recent-call-35",
+        "title": "月",
+        "body": "通话时长 4分49秒",
+        "time": "2026-10-20 16:35",
+        "meta": {
+          "number": "10058006958",
+          "status": "呼出"
+        }
+      },
+      {
+        "id": "recent-call-36",
+        "title": "爸",
+        "body": "通话时长 7分50秒",
+        "time": "2026-10-20 13:10",
+        "meta": {
+          "number": "10024443770",
+          "status": "呼入"
+        }
+      },
+      {
+        "id": "recent-call-37",
+        "title": "爸",
+        "body": "通话时长 3分26秒",
+        "time": "2026-10-20 10:25",
+        "meta": {
+          "number": "10024443770",
+          "status": "呼出"
+        }
+      },
+      {
+        "id": "recent-call-38",
+        "title": "经纪人",
+        "body": "通话时长 5分42秒",
+        "time": "2026-10-20 06:17",
+        "meta": {
+          "number": "10042143064",
+          "status": "呼入"
+        }
+      },
+      {
+        "id": "recent-call-39",
+        "title": "妈",
+        "body": "通话时长 3分53秒",
+        "time": "2026-10-20 05:28",
+        "meta": {
+          "number": "10072716021",
+          "status": "呼出"
+        }
+      },
+      {
+        "id": "recent-call-40",
+        "title": "月",
+        "body": "通话时长 3分58秒",
+        "time": "2026-10-20 02:13",
+        "meta": {
+          "number": "10058006958",
+          "status": "呼入"
+        }
+      },
+      {
+        "id": "recent-call-41",
+        "title": "爸",
+        "body": "通话时长 7分55秒",
+        "time": "2026-10-19 21:47",
+        "meta": {
+          "number": "10024443770",
+          "status": "呼出"
+        }
+      },
+      {
+        "id": "recent-call-42",
+        "title": "妈",
+        "body": "通话时长 3分17秒",
+        "time": "2026-10-19 18:04",
+        "meta": {
+          "number": "10072716021",
+          "status": "呼入"
+        }
+      },
+      {
+        "id": "recent-call-43",
+        "title": "月",
+        "body": "通话时长 8分15秒",
+        "time": "2026-10-19 16:36",
+        "meta": {
+          "number": "10058006958",
+          "status": "呼出"
+        }
+      },
+      {
+        "id": "recent-call-44",
+        "title": "月",
+        "body": "通话时长 5分37秒",
+        "time": "2026-10-19 14:43",
+        "meta": {
+          "number": "10058006958",
+          "status": "呼入"
+        }
+      },
+      {
+        "id": "recent-call-45",
+        "title": "爸",
+        "body": "通话时长 8分16秒",
+        "time": "2026-10-19 09:36",
+        "meta": {
+          "number": "10024443770",
+          "status": "呼入"
+        }
+      },
+      {
+        "id": "recent-call-46",
+        "title": "月",
+        "body": "通话时长 6分1秒",
+        "time": "2026-10-19 06:49",
+        "meta": {
+          "number": "10058006958",
+          "status": "呼入"
+        }
+      },
+      {
+        "id": "recent-call-47",
+        "title": "月",
+        "body": "通话时长 6分43秒",
+        "time": "2026-10-19 03:25",
+        "meta": {
+          "number": "10058006958",
+          "status": "呼出"
+        }
+      },
+      {
+        "id": "recent-call-48",
+        "title": "月",
+        "body": "通话时长 8分36秒",
+        "time": "2026-10-19 01:20",
+        "meta": {
+          "number": "10058006958",
+          "status": "呼出"
+        }
+      },
+      {
+        "id": "recent-call-49",
+        "title": "妈",
+        "body": "通话时长 3分37秒",
+        "time": "2026-10-18 19:32",
+        "meta": {
+          "number": "10072716021",
+          "status": "呼出"
+        }
+      },
+      {
+        "id": "recent-call-50",
+        "title": "经纪人",
+        "body": "通话时长 3分49秒",
+        "time": "2026-10-18 18:50",
+        "meta": {
+          "number": "10042143064",
+          "status": "呼出"
+        }
       }
     ],
     "contacts": [
       {
-        "id": "test-item-contacts",
-        "title": "测试内容",
-        "body": "这是一条测试内容。",
-        "sender": "测试用户",
-        "kind": "text",
-        "meta": {}
+        "id": "phone-owner-card",
+        "title": "小七🐱🌸",
+        "meta": {
+          "owner": "true"
+        }
       }
     ],
     "photos": [
@@ -3585,12 +4132,16 @@
     ],
     "reminders": [
       {
-        "id": "test-item-reminders",
-        "title": "测试内容",
-        "body": "这是一条测试内容。",
-        "sender": "测试用户",
-        "kind": "text",
-        "meta": {}
+        "id": "reminder-moon-chapter-concert",
+        "title": "《月章》音乐会",
+        "time": "9月13日",
+        "folder": "提醒事项"
+      },
+      {
+        "id": "reminder-moon-birthday",
+        "title": "月生日",
+        "time": "9月14日",
+        "folder": "提醒事项"
       }
     ],
     "files": [
@@ -3625,12 +4176,17 @@
     ],
     "weather": [
       {
-        "id": "test-item-weather",
-        "title": "测试内容",
-        "body": "这是一条测试内容。",
-        "sender": "测试用户",
-        "kind": "text",
-        "meta": {}
+        "id": "weather-beijing",
+        "title": "北京",
+        "meta": {
+          "temperature": "5",
+          "high": "10",
+          "low": "0",
+          "condition": "晴",
+          "sunrise": "07:03",
+          "hourly": "[{\"time\":\"现在\",\"temperature\":5},{\"time\":\"01时\",\"temperature\":4},{\"time\":\"02时\",\"temperature\":3},{\"time\":\"03时\",\"temperature\":2},{\"time\":\"04时\",\"temperature\":1}]",
+          "daily": "[{\"label\":\"今天\",\"low\":0,\"high\":10},{\"label\":\"明天\",\"low\":1,\"high\":11}]"
+        }
       }
     ],
     "wallet": [
@@ -3673,16 +4229,7 @@
         "meta": {}
       }
     ],
-    "settings": [
-      {
-        "id": "test-item-settings",
-        "title": "测试内容",
-        "body": "这是一条测试内容。",
-        "sender": "测试用户",
-        "kind": "text",
-        "meta": {}
-      }
-    ],
+    "settings": [],
     "weibo": [
       {
         "id": "weibo-yue-nine-gates-repost",

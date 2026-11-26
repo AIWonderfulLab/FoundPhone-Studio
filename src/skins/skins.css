@@ -234,48 +234,57 @@
 .call-row.missed strong {
   color: #ef4747;
 }
+.dialer-scroll {
+  container-type: size;
+}
 .dialer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 15px 30px;
-  gap: 13px;
+  --dial-key-size: clamp(46px, 13cqh, 90px);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  place-items: center;
+  align-content: space-evenly;
+  min-height: max(100%, 300px);
+  padding: 4px 12px;
+  row-gap: 4px;
 }
 .dialer output {
-  font-size: 23px;
-  min-height: 40px;
-  max-width: 100%;
-  overflow: hidden;
+  grid-column: 1 / -1;
+  width: 100%;
+  padding: 4px;
+  overflow-x: auto;
+  white-space: nowrap;
+  text-align: center;
+  font-size: clamp(22px, 5cqh, 34px);
   letter-spacing: 2px;
 }
-.dialer > div {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px 20px;
+.dial-key,
+.dial-call,
+.dial-delete {
+  width: min(100%, var(--dial-key-size));
+  aspect-ratio: 1;
 }
-.dialer > div button {
-  width: 59px;
-  height: 59px;
+.dial-key {
   border-radius: 50%;
   background: #ededed;
-  display: flex;
   flex-direction: column;
   gap: 0;
-  font-size: 26px;
+  font-size: clamp(24px, 5cqh, 36px);
+  line-height: 1;
   font-weight: 400;
 }
-.dialer button small {
+.dial-key small {
   font-size: 8px;
   letter-spacing: 2px;
   line-height: 1;
 }
 .dial-call {
-  width: 59px;
-  height: 59px;
+  grid-column: 2;
   border-radius: 50%;
   background: #2ac659;
   color: #fff;
-  margin-top: 3px;
+}
+.dial-delete {
+  grid-column: 3;
 }
 .virtual-call {
   position: absolute;
@@ -316,6 +325,7 @@
   gap: 12px;
   padding: 16px;
   align-items: center;
+  justify-content: flex-start;
   text-align: left;
   border-bottom: 1px solid #eee;
 }
@@ -330,8 +340,18 @@
   margin-top: 6px;
 }
 .native-contacts .catalog-row {
+  justify-content: flex-start;
   padding-top: 10px;
   padding-bottom: 10px;
+}
+.native-contacts .catalog-avatar {
+  flex: none;
+  overflow: hidden;
+}
+.native-contacts .catalog-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .photo-mosaic {
   display: grid;
@@ -4009,25 +4029,6 @@
   .catalog-message > button {
     font-size: 11px;
     max-width: 84%;
-  }
-  .dialer {
-    padding: 10px 22px;
-    gap: 9px;
-  }
-  .dialer > div {
-    gap: 9px 18px;
-  }
-  .dialer > div > button,
-  .dial-call {
-    width: 53px;
-    height: 53px;
-  }
-  .dialer output {
-    font-size: 20px;
-    min-height: 32px;
-  }
-  .dialer > div > button {
-    font-size: 23px;
   }
   .album-grid img,
   .album-grid .catalog-art {

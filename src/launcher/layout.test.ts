@@ -12,6 +12,44 @@ import {
 } from "./layout";
 const work = () => compileStory(blank).work;
 
+it("hides the seven system apps and keeps WeChat immediately left of Weibo", () => {
+  const authored = compileStory(template).work;
+  const fresh = defaultLayout(authored);
+  const hidden = ["notes", "maps", "music", "mail", "files", "find", "wallet"];
+  const old = structuredClone(fresh);
+  old.previewLayoutRevision = 5;
+  old.order = ["wechat", "settings", "weibo", ...hidden];
+  for (const app of old.apps.filter((app) => hidden.includes(app.id))) {
+    app.visible = true;
+  }
+  old.widgets.push({ id: "widget-clock", type: "clock", size: "small" });
+  old.positions = {
+    wechat: { page: 0, x: 0, y: 0 },
+    weibo: { page: 0, x: 3, y: 0 },
+    notes: { page: 0, x: 2, y: 1 },
+    "widget-clock": { page: 0, x: 0, y: 1 },
+  };
+
+  for (const layout of [fresh, validateLayout(old, authored)]) {
+    const entries = homeEntries(layout);
+    expect(entries.some((entry) => hidden.includes(entry.key))).toBe(false);
+    expect(layout.apps.filter((app) => app.installed && hidden.includes(app.id)))
+      .toHaveLength(hidden.length);
+    const page = packHome(entries, layout.positions).find((cells) =>
+      cells.some((cell) => cell.entry.key === "wechat"),
+    )!;
+    const wechat = page.find((cell) => cell.entry.key === "wechat")!;
+    expect(page.find((cell) => cell.entry.key === "weibo")).toMatchObject({
+      x: wechat.x + 1,
+      y: wechat.y,
+    });
+  }
+  const migrated = validateLayout(old, authored);
+  expect(migrated.positions["widget-clock"]).toEqual(old.positions["widget-clock"]);
+  expect(migrated.positions.notes).toBeUndefined();
+  expect(validateLayout(migrated, authored)).toEqual(migrated);
+});
+
 it("places B612 after NetEase and in the Camera Dock slot on new and saved layouts", () => {
   const authored = compileStory(template).work;
   const fresh = defaultLayout(authored);

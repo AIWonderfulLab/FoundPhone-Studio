@@ -115,8 +115,8 @@ export function WeiboSkin(p: Props) {
   const { tab, setTab, items } = useContent(p, "关注");
   const [feed, setFeed] = useState("全部");
   const swipeStart = useRef<{ id: number; x: number; y: number } | null>(null);
-  const personalAuthor = "陈瑶 Sebrina";
-  const followingAuthor = "张月 YueZhang";
+  const personalAuthor = "陈丫 Sebrina";
+  const followingAuthor = "张朋PengZhang";
   const hasAuthorTabs = items.some(
     ({ sender }) => sender === personalAuthor || sender === followingAuthor,
   );

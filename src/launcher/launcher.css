@@ -37,7 +37,7 @@
 .ios18 .interactive-home .home-pages {
   padding: 0;
   position: absolute;
-  top: 92px;
+  top: 87px;
   bottom: 164px;
   left: 0;
   right: 0;
@@ -53,15 +53,15 @@
   flex: 0 0 393px;
   width: 393px;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(6, 99px);
-  grid-auto-rows: 99px;
+  grid-template-rows: repeat(6, 104px);
+  grid-auto-rows: 104px;
   gap: 0;
   padding: 0 16px;
   margin: 0;
   align-content: start;
   scroll-snap-align: start;
-  height: 594px;
-  min-height: 594px;
+  height: 624px;
+  min-height: 624px;
   box-sizing: border-box;
 }
 .ios18 .launcher-slot {
@@ -166,7 +166,7 @@
 }
 .ios18 .interactive-home .dock {
   height: 94px;
-  padding: 16px 8px;
+  padding: 14px 8px;
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -174,7 +174,7 @@
 }
 .ios18 .interactive-home .dock .launcher-cell {
   width: 75px;
-  height: 62px;
+  height: 66px;
   flex: none;
 }
 .ios18 .interactive-home .dock .app-name {

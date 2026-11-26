@@ -3,7 +3,7 @@
   "id": "ui-test-phone-v2",
   "title": "瑶瑶姐的手机",
   "description": "仅用于界面测试，不含剧情",
-  "revision": 27,
+  "revision": 28,
   "phone": {
     "owner": "小七🐱🌸",
     "passcode": "0914",
@@ -2640,7 +2640,7 @@
           "id": "chat-moon-july-rewrite-270-companion-2",
           "senderId": "baby-moon",
           "time": "2026-07-29 10:47",
-          "body": "嗯 逛了一会儿",
+          "body": "嗯 我们逛了会儿",
           "meta": {}
         },
         {

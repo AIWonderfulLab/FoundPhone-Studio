@@ -96,6 +96,14 @@ try {
         );
         chat.messages.sort((a, b) => a.time.localeCompare(b.time));
       }
+      for (const [app, ids] of Object.entries(
+        overrides.removeContentIds || {},
+      )) {
+        const removed = new Set(ids);
+        raw.content[app] = (raw.content[app] || []).filter(
+          (item) => !removed.has(item.id),
+        );
+      }
     } catch (error) {
       if (error.code !== "ENOENT") throw error;
     }

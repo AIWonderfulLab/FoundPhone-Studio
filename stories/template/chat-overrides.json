@@ -1,0 +1,81 @@
+{
+  "chats": [
+    {
+      "chatId": "chat-ding-bowl",
+      "messages": [
+        {
+          "id": "chat-ding-july-01",
+          "senderId": "owner",
+          "time": "2026-07-26 09:12",
+          "body": "碗 月月上飞机了吗"
+        },
+        {
+          "id": "chat-ding-july-02",
+          "senderId": "ding-bowl",
+          "time": "2026-07-26 09:12",
+          "body": "嗯 刚登机"
+        },
+        {
+          "id": "chat-ding-july-03",
+          "senderId": "owner",
+          "time": "2026-07-26 09:12",
+          "body": "好"
+        },
+        {
+          "id": "chat-ding-july-04",
+          "senderId": "owner",
+          "time": "2026-07-27 19:36",
+          "body": "碗 月月怎么突然去韩国了"
+        },
+        {
+          "id": "chat-ding-july-05",
+          "senderId": "ding-bowl",
+          "time": "2026-07-27 19:36",
+          "body": "是她自己的安排"
+        },
+        {
+          "id": "chat-ding-july-06",
+          "senderId": "owner",
+          "time": "2026-07-27 19:36",
+          "body": "不是工作吗"
+        },
+        {
+          "id": "chat-ding-july-07",
+          "senderId": "ding-bowl",
+          "time": "2026-07-27 19:36",
+          "body": "不是工作行程"
+        },
+        {
+          "id": "chat-ding-july-08",
+          "senderId": "owner",
+          "time": "2026-07-27 19:36",
+          "body": "那她是去做什么呀"
+        },
+        {
+          "id": "chat-ding-july-09",
+          "senderId": "ding-bowl",
+          "time": "2026-07-27 19:36",
+          "body": "这个我不太方便说"
+        },
+        {
+          "id": "chat-ding-july-10",
+          "senderId": "owner",
+          "time": "2026-07-27 19:36",
+          "body": "她和谁一起去的你知道吗"
+        },
+        {
+          "id": "chat-ding-july-11",
+          "senderId": "ding-bowl",
+          "time": "2026-07-27 19:36",
+          "body": "这个还是问月月吧"
+        },
+        {
+          "id": "chat-ding-july-12",
+          "senderId": "owner",
+          "time": "2026-07-27 19:36",
+          "body": "好"
+        }
+      ]
+    }
+  ]
+}

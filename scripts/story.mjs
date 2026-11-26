@@ -82,6 +82,24 @@ try {
         .length - 1;
   }
   const raw = JSON.parse(json);
+  if (file === "stories/template/story.json") {
+    try {
+      const overrides = JSON.parse(
+        await readFile("stories/template/chat-overrides.json", "utf8"),
+      );
+      for (const override of overrides.chats || []) {
+        const chat = raw.chats?.find((item) => item.id === override.chatId);
+        if (!chat) throw Error(`找不到覆盖目标聊天 ${override.chatId}`);
+        const ids = new Set(chat.messages.map((message) => message.id));
+        chat.messages.push(
+          ...(override.messages || []).filter((message) => !ids.has(message.id)),
+        );
+        chat.messages.sort((a, b) => a.time.localeCompare(b.time));
+      }
+    } catch (error) {
+      if (error.code !== "ENOENT") throw error;
+    }
+  }
   const { compileStory, storySchema } = await server.ssrLoadModule(
     "/src/story-engine/compiler.ts",
   );

@@ -1,8 +1,13 @@
 {
+  "revision": 43,
   "removeContentIds": {
     "safari": ["test-item-safari"]
   },
   "chats": [
+    {
+      "chatId": "chat-zhewen",
+      "removeMessageIds": ["chat-zhewen-july-20a"]
+    },
     {
       "chatId": "chat-ding-bowl",
       "messages": [

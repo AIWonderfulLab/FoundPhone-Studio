@@ -87,6 +87,7 @@ try {
       const overrides = JSON.parse(
         await readFile("stories/template/chat-overrides.json", "utf8"),
       );
+      raw.revision = overrides.revision ?? raw.revision;
       for (const override of overrides.chats || []) {
         const chat = raw.chats?.find((item) => item.id === override.chatId);
         if (!chat) throw Error(`找不到覆盖目标聊天 ${override.chatId}`);
@@ -94,6 +95,10 @@ try {
         chat.messages.push(
           ...(override.messages || []).filter((message) => !ids.has(message.id)),
         );
+        if (override.removeMessageIds?.length) {
+          const removed = new Set(override.removeMessageIds);
+          chat.messages = chat.messages.filter((message) => !removed.has(message.id));
+        }
         chat.messages.sort((a, b) => a.time.localeCompare(b.time));
       }
       for (const [app, ids] of Object.entries(

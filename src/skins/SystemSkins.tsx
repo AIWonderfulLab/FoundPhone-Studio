@@ -45,14 +45,19 @@ import {
 } from "./shared";
 export function PhoneSkin(p: Props) {
   const { tab, setTab, q, setQ, items } = useContent(p, "最近通话");
-  const [digits, setDigits] = useState(""),
-    [call, setCall] = useState("");
+  const [digits, setDigits] = useState("");
   const keypad = tab === "拨号键盘";
   const contactsTab = tab === "通讯录";
-  const contacts = (p.phoneContacts ?? []).filter(
-    (item) =>
-      meta(item, "owner") !== "true" &&
-      (item.title + meta(item, "phone")).toLowerCase().includes(q.toLowerCase()),
+  const contactsByName = new Map<string, Item>();
+  for (const item of p.items) {
+    if (!item.title || !meta(item, "number")) continue;
+    const previous = contactsByName.get(item.title);
+    if (!previous || item.time > previous.time) {
+      contactsByName.set(item.title, item);
+    }
+  }
+  const contacts = [...contactsByName.values()].filter((item) =>
+    (item.title + meta(item, "number")).toLowerCase().includes(q.toLowerCase()),
   );
   const list = tab === "收藏" ? items.filter((i) => i.favorite) : items;
   return (
@@ -80,12 +85,7 @@ export function PhoneSkin(p: Props) {
             <button
               className="dial-call"
               disabled={!digits}
-              aria-label="模拟拨号"
-              onClick={() => {
-                setCall(digits);
-                const i = items.find((i) => meta(i, "number") === digits);
-                if (i) p.onRead(i.id);
-              }}
+              aria-label="拨打"
             >
               <Phone size={24} />
             </button>
@@ -135,17 +135,6 @@ export function PhoneSkin(p: Props) {
         set={setTab}
         icons={[<Star />, <Clock />, <Users />, <Grid />]}
       />
-      {call && (
-        <div className="virtual-call">
-          <small>虚拟通话</small>
-          <Avatar name={call} />
-          <h2>{call}</h2>
-          <p>这是作品内的通话模拟</p>
-          <button aria-label="挂断" onClick={() => setCall("")}>
-            <Phone />
-          </button>
-        </div>
-      )}
     </div>
   );
 }

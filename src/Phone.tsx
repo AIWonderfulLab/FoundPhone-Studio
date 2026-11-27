@@ -1015,7 +1015,7 @@ function AppContent({
               onUi={creator ? undefined : onUi}
               name={name}
               items={shown}
-              phoneContacts={(app.id === "phone" && !creator) || app.id === "wechat"
+              phoneContacts={app.id === "wechat"
                 ? [...(work.data.contacts ?? []), ...(state.messages.contacts ?? [])].filter(
                     (item) => visible(item, state),
                   )

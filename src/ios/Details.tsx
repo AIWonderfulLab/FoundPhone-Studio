@@ -33,8 +33,7 @@ export function NativeDetail({
   back: () => void;
 }) {
   const [favorite, setFavorite] = useState(item.favorite),
-    [copied, setCopied] = useState(false),
-    [call, setCall] = useState(false);
+    [copied, setCopied] = useState(false);
   const media = safeMedia(item.media),
     name =
       app === "notes"
@@ -118,7 +117,7 @@ export function NativeDetail({
             ].map(([Icon, label]) => {
               const Glyph = Icon as typeof Phone;
               return (
-                <button key={String(label)} onClick={() => setCall(true)}>
+                <button type="button" key={String(label)}>
                   <Glyph size={23} />
                   {String(label)}
                 </button>
@@ -135,12 +134,6 @@ export function NativeDetail({
             <small>备注</small>
             <p>{item.body}</p>
           </div>
-          {call && (
-            <div className="native-detail-group">
-              <p>作品内模拟 · {item.title}</p>
-              <button onClick={() => setCall(false)}>结束</button>
-            </div>
-          )}
         </div>
       ) : app === "notes" ? (
         <>

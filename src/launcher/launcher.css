@@ -38,29 +38,34 @@
   padding: 0;
   position: absolute;
   top: 87px;
-  bottom: 174px;
+  bottom: 142px;
   left: 0;
   right: 0;
   height: auto;
-  container-type: size;
   display: flex;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   touch-action: none;
   scrollbar-width: none;
 }
+/* Move the grid as a whole to keep the existing icon sizes and row spacing. */
+.ios18 .interactive-home:not(.home-editing) .home-pages {
+  transform: translateY(-12px);
+}
 .ios18 .interactive-home .home-app-grid {
   display: grid;
   flex: 0 0 393px;
   width: 393px;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(6, minmax(0, 1fr));
+  grid-template-rows: repeat(6, 124px);
+  grid-auto-rows: 124px;
   gap: 0;
   padding: 0 16px;
   margin: 0;
   align-content: start;
   scroll-snap-align: start;
-  height: 100%;
+  height: 744px;
+  min-height: 744px;
   box-sizing: border-box;
 }
 .ios18 .launcher-slot {
@@ -85,13 +90,6 @@
   color: inherit;
   user-select: none;
   -webkit-user-select: none;
-}
-.ios18 .home-app-grid .launcher-cell {
-  --launcher-icon-size: clamp(0px, min(calc(16.666cqh - 30px), calc(25cqw - 8px)), 76px);
-}
-.ios18 .home-app-grid .launcher-cell :is(.app-icon, .folder-icon):not(.folder-icon *) {
-  width: var(--launcher-icon-size);
-  height: var(--launcher-icon-size);
 }
 .ios18 .launcher-cell .app-icon-wrap {
   gap: 7px;

@@ -456,10 +456,14 @@ export function WeChatSkin(p: SkinProps) {
     ),
   ].sort((a, b) => Number(pinnedThreads.has(b)) - Number(pinnedThreads.has(a)));
   const isPost = (i: Item) => i.folder === "朋友圈" || i.kind === "post";
+  const contactMessages = p.items.filter(
+    (item) => !isPost(item) && item.sender !== "我" && item.sender !== p.owner,
+  );
   const contacts = [
-    ...new Set(
-      p.items.filter((i) => !isPost(i)).map((i) => i.sender).filter((s) => s !== "我" && s !== p.owner),
-    ),
+    ...new Set([
+      ...contactMessages.map((item) => item.sender),
+      ...(p.phoneContacts ?? []).map((card) => card.title),
+    ]),
   ];
   const posts = visibleMoments(p.items.filter(isPost), p.owner);
   return (
@@ -672,25 +676,27 @@ export function WeChatSkin(p: SkinProps) {
           ) : tab === "通讯录" ? (
             <>
               <div className="wx-section-label">联系人</div>
-              {contacts.map((c) => (
-                <button
-                  key={c}
-                  className="wx-contact"
-                  onClick={() => {
-                    const item = p.items.find((i) => i.sender === c);
-                    if (item) {
-                      p.onThread(item.title);
-                      p.onRead(item.title);
-                    }
-                  }}
-                >
-                  <Avatar
-                    name={c}
-                    src={p.items.find((i) => i.sender === c)?.avatar}
-                  />
-                  {c}
-                </button>
-              ))}
+              {contacts.map((name) => {
+                const message = contactMessages.find((item) => item.sender === name);
+                const card = p.phoneContacts?.find((item) => item.title === name);
+                return (
+                  <button
+                    key={name}
+                    className="wx-contact"
+                    onClick={() => {
+                      if (message) {
+                        p.onThread(message.title);
+                        p.onRead(message.title);
+                      } else if (card) {
+                        p.onItem(card);
+                      }
+                    }}
+                  >
+                    <Avatar name={name} src={message?.avatar || card?.avatar} />
+                    {name}
+                  </button>
+                );
+              })}
             </>
           ) : tab === "发现" ? (
             <div className="wx-discover-groups">

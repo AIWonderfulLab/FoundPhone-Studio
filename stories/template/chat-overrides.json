@@ -1,6 +1,9 @@
 {
-  "revision": 46,
+  "revision": 47,
   "removeContentIds": {
+    "clock": [
+      "test-item-clock"
+    ],
     "safari": [
       "test-item-safari"
     ]

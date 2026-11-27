@@ -211,6 +211,17 @@ export function validateLayout(raw: unknown, input: Work) {
     placePreviewSocialApps(layout);
     layout.previewLayoutRevision = 6;
   }
+  if (w.id === "ui-test-phone-v2" && layout.previewLayoutRevision < 7) {
+    const health = layout.apps.find((app) => app.id === "health");
+    if (health) {
+      health.visible = false;
+      health.dock = false;
+      health.folder = "";
+      delete layout.positions.health;
+      layout.order = layout.order.filter((id) => id !== "health");
+    }
+    layout.previewLayoutRevision = 7;
+  }
   const entries = homeEntries(layout),
     packed = packHome(entries, layout.positions);
   for (const entry of entries) {

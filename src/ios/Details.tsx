@@ -130,10 +130,12 @@ export function NativeDetail({
               {item.meta.phone || item.meta.number || "未设置号码"}
             </p>
           </div>
-          <div className="native-detail-group">
-            <small>备注</small>
-            <p>{item.body}</p>
-          </div>
+          {item.body && (
+            <div className="native-detail-group">
+              <small>备注</small>
+              <p>{item.body}</p>
+            </div>
+          )}
         </div>
       ) : app === "notes" ? (
         <>

@@ -102,7 +102,13 @@ export function PhoneSkin(p: Props) {
           <>
             <h1>{tab}</h1>
             <SearchBox value={q} set={setQ} />
-            <ContactRows items={contacts} onItem={p.onItem} />
+            <ContactRows
+              items={contacts}
+              nameOnly
+              onItem={(item) =>
+                p.onItem(p.creator ? item : { ...item, body: "", time: "" })
+              }
+            />
           </>
         ) : (
           <>
@@ -176,7 +182,7 @@ export function ContactsSkin(p: Props) {
     </div>
   );
 }
-function ContactRows({ items, onItem }: Pick<Props, "items" | "onItem">) {
+function ContactRows({ items, onItem, nameOnly }: Pick<Props, "items" | "onItem"> & { nameOnly?: boolean }) {
   return (
     <>
       {groupItems(items, "所有联系人").map((g) => (
@@ -190,6 +196,7 @@ function ContactRows({ items, onItem }: Pick<Props, "items" | "onItem">) {
                 key={i.id}
                 item={i}
                 onItem={onItem}
+                nameOnly={nameOnly}
                 leading={<Avatar name={i.title} src={i.avatar} />}
               />
             ))}

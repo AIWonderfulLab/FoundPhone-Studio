@@ -136,19 +136,25 @@ export function Row({
   onItem,
   leading,
   children,
+  nameOnly,
 }: {
   item: Item;
   onItem: (i: Item) => void;
   leading?: ReactNode;
   children?: ReactNode;
+  nameOnly?: boolean;
 }) {
   return (
     <button className="catalog-row" onClick={() => onItem(item)}>
       {leading ?? <FileText size={22} />}
       <span>
         <strong>{item.title}</strong>
-        <p>{item.body.split("\n")[0]}</p>
-        <small>{item.time}</small>
+        {!nameOnly && (
+          <>
+            <p>{item.body.split("\n")[0]}</p>
+            <small>{item.time}</small>
+          </>
+        )}
       </span>
       {children ??
         (item.password ? (

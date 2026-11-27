@@ -38,7 +38,7 @@
   padding: 0;
   position: absolute;
   top: 87px;
-  bottom: 164px;
+  bottom: 142px;
   left: 0;
   right: 0;
   height: auto;
@@ -53,15 +53,15 @@
   flex: 0 0 393px;
   width: 393px;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(6, 110px);
-  grid-auto-rows: 110px;
+  grid-template-rows: repeat(6, 124px);
+  grid-auto-rows: 124px;
   gap: 0;
   padding: 0 16px;
   margin: 0;
   align-content: start;
   scroll-snap-align: start;
-  height: 660px;
-  min-height: 660px;
+  height: 744px;
+  min-height: 744px;
   box-sizing: border-box;
 }
 .ios18 .launcher-slot {
@@ -88,7 +88,7 @@
   -webkit-user-select: none;
 }
 .ios18 .launcher-cell .app-icon-wrap {
-  gap: 5px;
+  gap: 7px;
   pointer-events: none;
 }
 .ios18 .launcher-cell .app-name {
@@ -165,7 +165,7 @@
   right: 0;
 }
 .ios18 .interactive-home .dock {
-  height: 94px;
+  height: 102px;
   padding: 13px 8px;
   display: flex;
   align-items: center;
@@ -174,7 +174,7 @@
 }
 .ios18 .interactive-home .dock .launcher-cell {
   width: 75px;
-  height: 68px;
+  height: 76px;
   flex: none;
 }
 .ios18 .interactive-home .dock .app-name {
@@ -182,7 +182,7 @@
 }
 .ios18 .launcher-bottom-tools {
   position: absolute;
-  bottom: 115px;
+  bottom: 123px;
   left: 0;
   right: 0;
   display: flex;

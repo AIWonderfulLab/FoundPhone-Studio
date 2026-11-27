@@ -1,0 +1,45 @@
+.wx-moment-post .wx-moment-photo {
+  display: block;
+  max-width: 230px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.wx-moment-photo img {
+  display: block;
+  border-radius: 4px;
+}
+
+.wx-moment-audience,
+.wx-moment-likes {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.wx-moment-audience {
+  margin-top: 4px;
+  color: #777;
+  font-size: 11px;
+}
+
+.wx-moment-reactions {
+  margin-top: 8px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  background: #f4f4f5;
+  color: #292929;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.wx-moment-likes {
+  color: #61769a;
+}
+
+.wx-moment-reactions .wx-comment-sticker {
+  display: block;
+  width: 56px;
+  margin: 3px 0;
+}

@@ -1,3 +1,4 @@
+import { MomentDetails, visibleMoments } from "./WeChatMoments";
 import { KeyboardContext, NativeComposer } from "./DeviceSystem";
 import { useSkinState } from "./skinState";
 import { localAudioUrl } from "./audio";
@@ -454,14 +455,13 @@ export function WeChatSkin(p: SkinProps) {
         .map((i) => i.title),
     ),
   ].sort((a, b) => Number(pinnedThreads.has(b)) - Number(pinnedThreads.has(a)));
+  const isPost = (i: Item) => i.folder === "朋友圈" || i.kind === "post";
   const contacts = [
     ...new Set(
-      p.items.map((i) => i.sender).filter((s) => s !== "我" && s !== p.owner),
+      p.items.filter((i) => !isPost(i)).map((i) => i.sender).filter((s) => s !== "我" && s !== p.owner),
     ),
   ];
-  const posts = p.items.filter(
-    (i) => i.folder === "朋友圈" || i.kind === "post",
-  );
+  const posts = visibleMoments(p.items.filter(isPost), p.owner);
   return (
     <div
       className="wechat-ui independent-skin"
@@ -570,7 +570,6 @@ export function WeChatSkin(p: SkinProps) {
             onCall={startVoiceCall}
             onPreview={(item, trigger) => setPhoto({ item, trigger })}
           />
-          {photo && <WeChatImageViewer {...photo} onClose={() => setPhoto(null)} />}
           {voiceCall && (
             <div className="wx-voice-call-screen" role="dialog" aria-label={`微信${voiceCall}`}>
               <div className="wx-voice-call-avatar"><Avatar name={p.thread} src={p.items.find((item) => item.title === p.thread && !item.outgoing)?.avatar} /></div>
@@ -590,19 +589,20 @@ export function WeChatSkin(p: SkinProps) {
             <span>朋友圈</span>
           </div>
           {posts.map((i) => (
-            <button
-              key={i.id}
-              className="wx-moment-post"
-              onClick={() => p.onItem(i)}
-            >
-              <Avatar name={i.sender} />
+            <article key={i.id} className="wx-moment-post">
+              <Avatar name={i.sender} src={i.avatar || p.items.find((item) => item.sender === i.meta.profile && item.avatar)?.avatar} />
               <div>
                 <strong>{i.sender}</strong>
                 <p>{i.body}</p>
-                {i.media && <ItemMedia item={i} />}
-                <small>{i.time}</small>
+                {i.media && (
+                  <button className="wx-moment-photo" aria-label="查看朋友圈图片" onClick={(event) => setPhoto({ item: i, trigger: event.currentTarget })}>
+                    <ItemMedia item={i} />
+                  </button>
+                )}
+                <small>{messageTimeLabel(i.time, true)}</small>
+                <MomentDetails post={i} items={p.items} />
               </div>
-            </button>
+            </article>
           ))}
           {!posts.length && <p className="skin-empty">暂无朋友圈动态</p>}
           {p.creator && (
@@ -785,6 +785,7 @@ export function WeChatSkin(p: SkinProps) {
           )}
         </div>
       )}
+      {photo && <WeChatImageViewer {...photo} onClose={() => setPhoto(null)} />}
       {!p.thread && !moments && !utility && (
         <nav className="wx-bottom">
           {[

@@ -88,6 +88,18 @@ try {
         await readFile("stories/template/chat-overrides.json", "utf8"),
       );
       raw.revision = overrides.revision ?? raw.revision;
+      raw.contacts.push(...(overrides.contacts || []));
+      raw.chats.push(...(overrides.newChats || []));
+      const mediaById = new Map(
+        raw.chats.flatMap((chat) => chat.messages.map(({ id, media }) => [id, media])),
+      );
+      for (const { mediaFrom, ...post } of overrides.moments || []) {
+        if (mediaFrom) {
+          post.media = mediaById.get(mediaFrom);
+          if (!post.media) throw Error(`找不到朋友圈图片 ${mediaFrom}`);
+        }
+        (raw.content.wechat ??= []).push(post);
+      }
       for (const override of overrides.chats || []) {
         const chat = raw.chats?.find((item) => item.id === override.chatId);
         if (!chat) throw Error(`找不到覆盖目标聊天 ${override.chatId}`);

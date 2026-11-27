@@ -112,6 +112,14 @@ try {
           chat.messages = chat.messages.filter((message) => !removed.has(message.id));
         }
         chat.messages.sort((a, b) => a.time.localeCompare(b.time));
+        for (const [firstId, secondId] of override.swapMessagePairs || []) {
+          const first = chat.messages.findIndex((message) => message.id === firstId);
+          const second = chat.messages.findIndex((message) => message.id === secondId);
+          if (first < 0 || second < 0 || chat.messages[first].time !== chat.messages[second].time) {
+            throw Error(`无法交换聊天消息顺序 ${firstId} / ${secondId}`);
+          }
+          [chat.messages[first], chat.messages[second]] = [chat.messages[second], chat.messages[first]];
+        }
       }
       for (const [app, ids] of Object.entries(
         overrides.removeContentIds || {},

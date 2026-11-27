@@ -1,5 +1,5 @@
 {
-  "revision": 47,
+  "revision": 48,
   "removeContentIds": {
     "clock": [
       "test-item-clock"
@@ -11,6 +11,9 @@
   "chats": [
     {
       "chatId": "chat-zhewen",
+      "swapMessagePairs": [
+        ["chat-zhewen-july-56", "chat-zhewen-july-56a"]
+      ],
       "removeMessageIds": [
         "chat-zhewen-july-20a"
       ]

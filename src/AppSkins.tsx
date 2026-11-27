@@ -588,10 +588,7 @@ export function WeChatSkin(p: SkinProps) {
         </>
       ) : moments ? (
         <div className="wx-moments">
-          <div className="wx-moment-cover">
-            <Camera size={32} />
-            <span>朋友圈</span>
-          </div>
+          <div className="wx-moment-cover" role="img" aria-label="朋友圈封面，睡着的猫咪" />
           {posts.map((i) => (
             <article key={i.id} className="wx-moment-post">
               <Avatar name={i.sender} src={i.avatar || p.items.find((item) => item.sender === i.meta.profile && item.avatar)?.avatar} />

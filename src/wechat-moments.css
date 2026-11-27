@@ -1,3 +1,7 @@
+.wx-moments .wx-moment-cover {
+  background: #8f9e96 url("./assets/wechat-moments-cover.jpeg") center 49% / cover no-repeat;
+}
+
 .wx-moment-post .wx-moment-photo {
   display: block;
   max-width: 230px;

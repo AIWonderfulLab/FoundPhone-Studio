@@ -1,5 +1,15 @@
 .wx-moments .wx-moment-cover {
-  background: #8f9e96 url("./assets/wechat-moments-cover.jpeg") center 49% / cover no-repeat;
+  height: 220px;
+  background: #8f9e96 url("./assets/wechat-moments-cover.jpeg") center 48% / cover no-repeat;
+}
+
+.wx-moments .wx-moment-post strong,
+.wx-moments .wx-moment-post p {
+  font-size: 16px;
+}
+
+.wx-moments .wx-moment-post small {
+  font-size: 12px;
 }
 
 .wx-moment-post .wx-moment-photo {
@@ -25,7 +35,7 @@
 .wx-moment-audience {
   margin-top: 4px;
   color: #777;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .wx-moment-reactions {
@@ -34,8 +44,12 @@
   border-radius: 4px;
   background: #f4f4f5;
   color: #292929;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.7;
+}
+
+.wx-moments .wx-moment-reactions strong {
+  font-size: inherit;
 }
 
 .wx-moment-likes {

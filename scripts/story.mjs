@@ -89,6 +89,7 @@ try {
       );
       raw.revision = overrides.revision ?? raw.revision;
       raw.contacts.push(...(overrides.contacts || []));
+      raw.chats.push(...(overrides.newChats || []));
       const mediaById = new Map(
         raw.chats.flatMap((chat) => chat.messages.map(({ id, media }) => [id, media])),
       );
